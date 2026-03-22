@@ -1,5 +1,5 @@
 data/
-models/*.h5
+models/training_checkpoints/*.h5
 __pycache__/
 .ipynb_checkpoints/
 *.pyc
