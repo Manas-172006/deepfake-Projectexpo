@@ -29,6 +29,22 @@ A deep learning pipeline that:
 
 ---
 
+## Results
+
+| Metric | Score |
+|---|---|
+| Test Accuracy | **94.42%** |
+| Validation Accuracy | **94.4%** |
+| AUC-ROC | **0.9878** |
+| F1 Score (Fake) | **0.94** |
+| F1 Score (Real) | **0.94** |
+| Fake detection confidence (sample) | 100% |
+| Real detection confidence (sample) | 99.7% |
+| Fakes correctly caught (test set) | 9,349 / 10,000 |
+| Real images correctly identified | 9,536 / 10,000 |
+
+---
+
 ## Grad-CAM results
 
 ### Fake image — detected at 100% confidence
@@ -40,6 +56,16 @@ A deep learning pipeline that:
 ![Real image Grad-CAM](assets/gradcam_real.png)
 
 *Activation spread naturally across facial features — consistent with how real faces are structured.*
+
+---
+
+## Evaluation plots
+
+### Confusion matrix
+![Confusion Matrix](assets/confusion_matrix.png)
+
+### ROC curve
+![ROC Curve](assets/roc_curve.png)
 
 ---
 
@@ -80,22 +106,7 @@ Input (224×224×3)
 → Dense(1, sigmoid)                        # outputs confidence score 0–1
 ```
 
-Total parameters: ~4.96 million | Training accuracy: 94.6% | Val accuracy: 94.4%
-
----
-
-## Results
-
-| Metric | Score |
-|---|---|
-| Validation Accuracy | 94.4% |
-| Training Accuracy | 94.6% |
-| AUC-ROC | — |
-| F1 Score | — |
-| Fake detection confidence (sample) | 100% |
-| Real detection confidence (sample) | 99.7% |
-
-> Full evaluation metrics (confusion matrix, ROC curve) coming soon.
+Total parameters: ~4.96 million
 
 ---
 
@@ -104,12 +115,16 @@ Total parameters: ~4.96 million | Training accuracy: 94.6% | Val accuracy: 94.4%
 ```
 deepfake-Projectexpo/
 ├── notebooks/
-│   └── Training.ipynb       ← full training pipeline + Grad-CAM
+│   └── Training.ipynb       ← full pipeline: training + Grad-CAM + evaluation
 ├── src/                     ← preprocessing and utility scripts
 ├── models/
 │   └── best_model.h5        ← trained model (94.4% val accuracy)
 ├── app/                     ← Streamlit frontend
-├── assets/                  ← images for README
+├── assets/
+│   ├── gradcam_fake.png     ← Grad-CAM output on fake image
+│   ├── gradcam_real.png     ← Grad-CAM output on real image
+│   ├── confusion_matrix.png ← evaluation plot
+│   └── roc_curve.png        ← evaluation plot
 ├── data/                    ← dataset (not pushed to GitHub)
 ├── .gitignore
 └── README.md
@@ -127,7 +142,7 @@ cd deepfake-Projectexpo
 
 **2. Install dependencies**
 ```bash
-pip install tensorflow streamlit opencv-python matplotlib scikit-learn
+pip install tensorflow streamlit opencv-python matplotlib scikit-learn seaborn
 ```
 
 **3. Download the dataset**
@@ -142,12 +157,12 @@ streamlit run app.py
 
 ---
 
-## Coming soon
+## Status
 
-- [x] CNN model trained — 94.4% validation accuracy
-- [x] Grad-CAM heatmap visualization
+- [x] CNN model trained — 94.42% test accuracy
+- [x] Grad-CAM heatmap visualization working
+- [x] Evaluation complete — AUC-ROC 0.9878, F1 0.94
 - [ ] Streamlit UI with confidence score display
-- [ ] Full evaluation plots (confusion matrix, ROC curve)
 - [ ] Demo screenshots
 
 ---
