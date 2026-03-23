@@ -29,6 +29,20 @@ A deep learning pipeline that:
 
 ---
 
+## Grad-CAM results
+
+### Fake image — detected at 100% confidence
+![Fake image Grad-CAM](assets/gradcam_fake.png)
+
+*Red/warm regions show where the model detected deepfake artifacts — typically around face boundaries, forehead and jaw where GAN generation fails.*
+
+### Real image — detected at 99.7% confidence
+![Real image Grad-CAM](assets/gradcam_real.png)
+
+*Activation spread naturally across facial features — consistent with how real faces are structured.*
+
+---
+
 ## Tech stack
 
 | Component | Technology |
@@ -54,6 +68,7 @@ A deep learning pipeline that:
 ---
 
 ## Model architecture
+
 ```
 Input (224×224×3)
 → Conv2D(32) + BatchNorm + MaxPooling      # detects edges, colours
@@ -65,34 +80,40 @@ Input (224×224×3)
 → Dense(1, sigmoid)                        # outputs confidence score 0–1
 ```
 
-Total parameters: ~4.96 million
-
----
-
-## Project structure
-```
-deepfake-Projectexpo/
-├── notebooks/
-│   └── Training.ipynb       ← full training pipeline
-├── src/                     ← preprocessing and utility scripts
-├── models/                  ← saved best_model.h5
-├── app/                     ← Streamlit frontend
-├── data/                    ← dataset (not pushed to GitHub)
-├── .gitignore
-└── README.md
-```
+Total parameters: ~4.96 million | Training accuracy: 94.6% | Val accuracy: 94.4%
 
 ---
 
 ## Results
 
-> *(To be updated after training completes)*
-
 | Metric | Score |
 |---|---|
-| Accuracy | — |
+| Validation Accuracy | 94.4% |
+| Training Accuracy | 94.6% |
 | AUC-ROC | — |
 | F1 Score | — |
+| Fake detection confidence (sample) | 100% |
+| Real detection confidence (sample) | 99.7% |
+
+> Full evaluation metrics (confusion matrix, ROC curve) coming soon.
+
+---
+
+## Project structure
+
+```
+deepfake-Projectexpo/
+├── notebooks/
+│   └── Training.ipynb       ← full training pipeline + Grad-CAM
+├── src/                     ← preprocessing and utility scripts
+├── models/
+│   └── best_model.h5        ← trained model (94.4% val accuracy)
+├── app/                     ← Streamlit frontend
+├── assets/                  ← images for README
+├── data/                    ← dataset (not pushed to GitHub)
+├── .gitignore
+└── README.md
+```
 
 ---
 
@@ -113,11 +134,7 @@ pip install tensorflow streamlit opencv-python matplotlib scikit-learn
 
 Get the dataset from [Kaggle](https://www.kaggle.com/datasets/xhlulu/140k-real-and-fake-faces) and place it in the `data/` folder.
 
-**4. Train the model**
-
-Open `notebooks/Training.ipynb` in Google Colab with T4 GPU enabled and run all cells.
-
-**5. Run the app**
+**4. Run the app**
 ```bash
 cd app
 streamlit run app.py
@@ -127,9 +144,10 @@ streamlit run app.py
 
 ## Coming soon
 
-- [ ] Grad-CAM heatmap visualization
+- [x] CNN model trained — 94.4% validation accuracy
+- [x] Grad-CAM heatmap visualization
 - [ ] Streamlit UI with confidence score display
-- [ ] Evaluation plots (confusion matrix, ROC curve)
+- [ ] Full evaluation plots (confusion matrix, ROC curve)
 - [ ] Demo screenshots
 
 ---
