@@ -486,8 +486,8 @@ supabase = init_supabase()
 def load_model():
     import tensorflow as tf
     model = tf.keras.models.load_model("models/best_model.h5")
-    dummy = np.zeros((1, 224, 224, 3))
-    model(dummy)
+    # Build it properly to define input shapes
+    model.build((None, 224, 224, 3))
     return model
 
 
@@ -520,7 +520,7 @@ Professional but approachable tone throughout.
 """
 
     model = genai.GenerativeModel(
-        model_name="gemini-2.5-flash-preview-05-20",
+        model_name="gemini-2.5-flash",
         system_instruction=system_instruction,
     )
     return model, genai
@@ -530,27 +530,31 @@ Professional but approachable tone throughout.
 def make_gradcam_heatmap(img_array, model, last_conv_layer_name="conv2d_3"):
     import tensorflow as tf
 
+    # build a function that gives us conv output + final output
     conv_layer = model.get_layer(last_conv_layer_name)
 
-    # Sub-model: input → conv layer output
-    grad_model = tf.keras.Model(
-        inputs=model.input,
-        outputs=[conv_layer.output, model.output]
-    )
+    # create sub-model from conv layer to end
+    classifier_input = tf.keras.Input(shape=conv_layer.output.shape[1:])
+    x = classifier_input
+    for layer in model.layers[model.layers.index(conv_layer)+1:]:
+        x = layer(x)
+    classifier_model = tf.keras.Model(classifier_input, x)
 
     with tf.GradientTape() as tape:
         inputs = tf.cast(img_array, tf.float32)
-        conv_output, predictions = grad_model(inputs)
+        # get conv outputs using model.layers[0].input since build() was called
+        conv_model = tf.keras.Model(model.layers[0].input, conv_layer.output)
+        conv_outputs = conv_model(inputs)
+        tape.watch(conv_outputs)
+        predictions = classifier_model(conv_outputs)
         loss = predictions[:, 0]
 
-    grads = tape.gradient(loss, conv_output)
+    grads = tape.gradient(loss, conv_outputs)
     pooled_grads = tf.reduce_mean(grads, axis=(0, 1, 2))
-
-    conv_output = conv_output[0]
-    heatmap = conv_output @ pooled_grads[..., tf.newaxis]
+    conv_outputs = conv_outputs[0]
+    heatmap = conv_outputs @ pooled_grads[..., tf.newaxis]
     heatmap = tf.squeeze(heatmap)
     heatmap = tf.maximum(heatmap, 0) / (tf.math.reduce_max(heatmap) + 1e-8)
-
     return heatmap.numpy()
 
 
