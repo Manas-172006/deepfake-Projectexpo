@@ -1031,25 +1031,29 @@ Please factor this into your analysis but form your own visual assessment from t
                 ],
                 generation_config=genai.GenerationConfig(
                     temperature=0.3,
-                    max_output_tokens=800,
+                    max_output_tokens=2500,
                 ),
             )
             llm_output = response.text
+            
+            # Convert critical markdown to basic HTML so the custom div renders it properly
+            llm_output = llm_output.replace('\n', '<br>')
+            llm_output = re.sub(r'\*\*(.*?)\*\*', r'<strong style="color: var(--accent) !important; font-size: 1.05rem;">\1</strong>', llm_output)
 
         except genai.types.BlockedPromptException:
             llm_output = (
-                "⚠️ The request was blocked by Gemini's safety filters. "
+                "⚠️ The request was blocked by Gemini's safety filters.<br><br>"
                 "This may occur if the uploaded image contains content "
                 "that violates usage policies. Please try a different image."
             )
         except Exception as e:
             llm_output = (
-                f"❌ Gemini API error: {type(e).__name__}: {e}\n\n"
+                f"❌ Gemini API error: {type(e).__name__}: {e}<br><br>"
                 "Please verify your API key in .streamlit/secrets.toml."
             )
 
     st.markdown(
-        f'<div class="llm-card">{llm_output}</div>',
+        f'<div class="llm-card" style="word-wrap: break-word; height: auto;">{llm_output}</div>',
         unsafe_allow_html=True,
     )
 
