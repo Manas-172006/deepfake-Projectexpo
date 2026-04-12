@@ -1,6 +1,9 @@
 data/
-models/training_checkpoints/*.h5est
+models/training_checkpoints/*.h5
 __pycache__/
 .ipynb_checkpoints/
 *.pyc
 .env
+
+# Streamlit secrets (NEVER commit API keys to GitHub!)
+.streamlit/secrets.toml
