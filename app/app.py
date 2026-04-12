@@ -60,7 +60,7 @@ header {visibility: hidden !important;}
 [data-testid="stDecoration"] {display: none !important;}
 
 /* Headings */
-h1, h2, h3, h4, h5, h6, p, li, span, label, div {
+h1, h2, h3, h4, h5, h6, p, li, label {
     color: var(--text-primary) !important;
     font-family: 'Inter', sans-serif !important;
 }
@@ -74,6 +74,11 @@ h1, h2, h3, h4, h5, h6, p, li, span, label, div {
     color: var(--text-primary) !important;
     border-radius: 8px !important;
     font-family: 'Inter', sans-serif !important;
+}
+
+/* Hide "Press Enter to apply" text */
+[data-testid="InputInstructions"] {
+    display: none !important;
 }
 
 [data-testid="stTextInput"] input:focus,
@@ -197,6 +202,13 @@ h1, h2, h3, h4, h5, h6, p, li, span, label, div {
     font-weight: 800;
     color: var(--accent) !important;
     letter-spacing: -0.5px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+.nav-logo:hover {
+    transform: scale(1.03);
+    opacity: 0.9;
+    color: #818CF8 !important;
 }
 .nav-right {
     display: flex;
@@ -670,12 +682,6 @@ def show_auth_modal():
     col_left, col_form, col_right = st.columns([1, 1.5, 1])
 
     with col_form:
-        st.markdown(f"""
-        <div style="background: var(--surface); border: 1px solid var(--border);
-             border-radius: 16px; padding: 1.5rem; margin-top: 1rem;">
-        </div>
-        """, unsafe_allow_html=True)
-
         # Tab buttons
         tab1, tab2 = st.columns(2)
         with tab1:
@@ -785,7 +791,7 @@ def show_signup_form():
 def show_navbar():
     st.markdown(f"""
     <div class="navbar">
-        <div class="nav-logo">🛡️ DeepScan</div>
+        <a href="?home=1" target="_self" class="nav-logo" title="Go to Home / Refresh">🛡️ DeepScan</a>
         <div class="nav-right">
             Logged in as: <span class="nav-username">@{st.session_state['username']}</span>
         </div>
@@ -822,7 +828,7 @@ def show_hero():
     <div class="stats-row">
         <div class="stat-card">
             <div class="stat-emoji">🎯</div>
-            <div class="stat-value">94.42%</div>
+            <div class="stat-value">98.68%</div>
             <div class="stat-label">Accuracy</div>
         </div>
         <div class="stat-card">
@@ -852,7 +858,7 @@ misused for identity fraud, misinformation, and digital deception.
 
 Unlike black-box detectors, DeepScan goes beyond a simple yes/no verdict. It uses a
 custom-built Convolutional Neural Network (CNN) trained on **140,000 real and AI-generated
-face images**, achieving **94.42% test accuracy**. More importantly, it shows you exactly
+face images**, achieving **98.68% test accuracy**. More importantly, it shows you exactly
 why it made its decision — through **Grad-CAM heatmaps** that highlight the specific
 facial regions that triggered the deepfake alert.
 
