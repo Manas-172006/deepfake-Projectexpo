@@ -497,7 +497,11 @@ supabase = init_supabase()
 @st.cache_resource
 def load_model():
     import tensorflow as tf
-    model = tf.keras.models.load_model("models/best_model.h5")
+    import os
+    # Get the absolute path to the project root
+    root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    model_path = os.path.join(root_dir, "models", "best_model.h5")
+    model = tf.keras.models.load_model(model_path)
     # Build it properly to define input shapes
     model.build((None, 224, 224, 3))
     return model
