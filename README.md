@@ -1,174 +1,127 @@
-# DeepScan — AI-Powered Deepfake Detection
+# FakeProof Labs — AI-Generated Face Detection & Explainability
 
-> "Every deepfake we detect is a digital identity we protect, a truth we preserve, and a future we secure."
-
-Built by **FakeProof Labs** | S-VYASA Deemed to be University | AIONAI Club | Expo: April 23, 2025
+> Explainable CNN detection for AI-generated face imagery, built as an inference-first forensic demo platform.
 
 ---
 
-## What is this?
+## Overview
 
-DeepScan is an AI-powered system that detects whether a face image is real or AI-generated (deepfake) — and explains *why*. Unlike existing detectors that act as black boxes, DeepScan highlights the exact facial regions that triggered the decision using Grad-CAM heatmaps.
+**FakeProof Labs** is a full-stack system for detecting AI-generated face images and explaining the decision with Grad-CAM visualizations.
 
----
-
-## The problem
-
-With the rapid rise of AI-generated media, deepfakes have become increasingly realistic and accessible. This creates serious risks in misinformation, digital fraud, identity misuse, and erosion of trust in visual content. Most detection tools give a verdict with no explanation — which limits trust and practical usability.
+This repository is intended as an **inference and user-facing demo** of an existing CNN model. The original training dataset is not included locally.
 
 ---
 
-## Our solution
+## What It Does
 
-A deep learning pipeline that:
-
-- Detects whether an uploaded face image is **real or fake**
-- Provides a **confidence score** (e.g. 87% fake)
-- Generates a **Grad-CAM heatmap** showing which facial regions were suspicious
-- Explains the verdict in plain language (e.g. "Unnatural blending detected around eye region and jaw boundary")
-
----
-
-## Results
-
-| Metric | Score |
-|---|---|
-| Test Accuracy | **94.42%** |
-| Validation Accuracy | **94.4%** |
-| AUC-ROC | **0.9878** |
-| F1 Score (Fake) | **0.94** |
-| F1 Score (Real) | **0.94** |
-| Fake detection confidence (sample) | 100% |
-| Real detection confidence (sample) | 99.7% |
-| Fakes correctly caught (test set) | 9,349 / 10,000 |
-| Real images correctly identified | 9,536 / 10,000 |
+- Detects whether a face image is **Real** or **Fake** using a TensorFlow CNN
+- Computes **Grad-CAM heatmaps** showing model attention
+- Returns **visual overlays** and **confidence scores**
+- Supports **Gemini AI explanations** as an optional enhancement
+- Runs as **FastAPI backend + React frontend**
 
 ---
 
-## Grad-CAM results
+## Architecture
 
-### Fake image — detected at 100% confidence
-![Fake image Grad-CAM](assets/gradcam_fake.png)
+### Backend
+- FastAPI application in `backend/`
+- TensorFlow/Keras model inference in `backend/services/model_service.py`
+- Grad-CAM explainability in `backend/services/gradcam_service.py`
+- Heatmap encoding in `backend/services/heatmap_service.py`
 
-*Red/warm regions show where the model detected deepfake artifacts — typically around face boundaries, forehead and jaw where GAN generation fails.*
+### Frontend
+- React + Vite app in `frontend/`
+- Image upload, webcam capture, and results dashboard
+- Grad-CAM overlay display in `frontend/src/components/GradCAMViewer.jsx`
 
-### Real image — detected at 99.7% confidence
-![Real image Grad-CAM](assets/gradcam_real.png)
-
-*Activation spread naturally across facial features — consistent with how real faces are structured.*
-
----
-
-## Evaluation plots
-
-### Confusion matrix
-![Confusion Matrix](assets/confusion_matrix.png)
-
-### ROC curve
-![ROC Curve](assets/roc_curve.png)
+### Model
+- Saved model file: `models/best_model.h5`
+- Binary output: `0 = Fake`, `1 = Real`
+- Expected input: `224×224 RGB`, normalized to `[0,1]`
 
 ---
 
-## Tech stack
+## Grad-CAM Fix
 
-| Component | Technology |
-|---|---|
-| Model | CNN (4 conv layers) built with TensorFlow/Keras |
-| Explainability | Grad-CAM heatmap overlay |
-| Dataset | 140k Real and Fake Faces (Kaggle, xhlulu) |
-| Frontend | Streamlit with custom CSS |
-| Training environment | Google Colab (T4 GPU) |
-| Version control | GitHub |
+The repository includes a compatibility fix for Keras 3 / TensorFlow model graph behavior in `backend/services/gradcam_service.py`.
 
----
-
-## Dataset
-
-**140k Real and Fake Faces** by xhlulu on Kaggle
-
-- 70,000 real faces (sourced from Flickr)
-- 70,000 AI-generated fake faces (GAN-generated)
-- Pre-split into train / valid / test
-- Images resized to 224×224, normalized to 0–1
+Key improvements:
+- ensures the loaded model is built before Grad-CAM graph creation
+- supports both `model.inputs` / `model.input` and `model.outputs` / `model.output`
+- recursively locates the last convolutional layer in nested model structures
+- preserves the existing prediction pipeline unchanged
 
 ---
 
-## Model architecture
+## Setup
 
-```
-Input (224×224×3)
-→ Conv2D(32) + BatchNorm + MaxPooling      # detects edges, colours
-→ Conv2D(64) + BatchNorm + MaxPooling      # detects textures, skin patterns
-→ Conv2D(128) + BatchNorm + MaxPooling     # detects face parts
-→ Conv2D(128) + BatchNorm + MaxPooling     # detects deepfake artifacts
-→ Flatten
-→ Dense(256) + Dropout(0.5)
-→ Dense(1, sigmoid)                        # outputs confidence score 0–1
+### Backend
+
+```powershell
+cd deepfake-projectexpo/backend
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+copy .env.example .env
 ```
 
-Total parameters: ~4.96 million
+Edit `backend/.env` and set any required values, especially:
+- `GEMINI_API_KEY`
+- `GEMINI_ENABLED`
+- `INVERT_LABELS`
 
----
+Start the API:
 
-## Project structure
-
+```powershell
+uvicorn app:app --host 0.0.0.0 --port 8000 --reload
 ```
-deepfake-Projectexpo/
-├── notebooks/
-│   └── Training.ipynb       ← full pipeline: training + Grad-CAM + evaluation
-├── src/                     ← preprocessing and utility scripts
-├── models/
-│   └── best_model.h5        ← trained model (94.4% val accuracy)
-├── app/                     ← Streamlit frontend
-├── assets/
-│   ├── gradcam_fake.png     ← Grad-CAM output on fake image
-│   ├── gradcam_real.png     ← Grad-CAM output on real image
-│   ├── confusion_matrix.png ← evaluation plot
-│   └── roc_curve.png        ← evaluation plot
-├── data/                    ← dataset (not pushed to GitHub)
-├── .gitignore
-└── README.md
+
+### Frontend
+
+```powershell
+cd deepfake-projectexpo/frontend
+npm install
+npm run dev
 ```
 
 ---
 
-## How to run
+## API Endpoints
 
-**1. Clone the repo**
-```bash
-git clone https://github.com/Manas-172006/deepfake-Projectexpo.git
-cd deepfake-Projectexpo
-```
+### `POST /api/predict`
+Upload a face image and receive:
+- `prediction`
+- `confidence`
+- `raw_score`
+- `gradcam_score`
+- `heatmap_image`
+- `overlay_image`
+- `original_image`
+- `ai_analysis`
 
-**2. Install dependencies**
-```bash
-pip install tensorflow streamlit opencv-python matplotlib scikit-learn seaborn
-```
-
-**3. Download the dataset**
-
-Get the dataset from [Kaggle](https://www.kaggle.com/datasets/xhlulu/140k-real-and-fake-faces) and place it in the `data/` folder.
-
-**4. Run the app**
-```bash
-cd app
-streamlit run app.py
-```
+### `GET /api/health`
+Returns backend and model status.
 
 ---
 
-## Status
+## Repository Cleanup
 
-- [x] CNN model trained — 94.42% test accuracy
-- [x] Grad-CAM heatmap visualization working
-- [x] Evaluation complete — AUC-ROC 0.9878, F1 0.94
-- [ ] Streamlit UI with confidence score display
-- [ ] Demo screenshots
+The root now keeps only the core delivery structure. Historical analysis and deployment notes are archived under `docs/archive/`.
 
 ---
 
-## Team
+## Notes
 
-**FakeProof Labs**
-S-VYASA Deemed to be University — AIONAI Club
-Project Expo — April 23, 2025
+- This repository is intentionally an **inference and explainability system**. It does not contain the full Kaggle dataset or training data.
+- Grad-CAM visualizations are generated from the exported `best_model.h5` checkpoint.
+- Use `INVERT_LABELS=True` only if the model appears to be consistently flipped.
+
+---
+
+## Recommended Next Steps
+
+- add unit tests for model inference and Grad-CAM
+- document dataset provenance clearly
+- add a Docker compose demo for easy local launch
+- validate `frontend/` and `backend/` startup with CI checks
