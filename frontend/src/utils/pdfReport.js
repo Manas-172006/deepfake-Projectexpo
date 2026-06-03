@@ -147,28 +147,55 @@ export const generateForensicReport = async (result, imageDataUrl) => {
   let y = 90;
 
   if (imageDataUrl) {
-    roundRect(doc, 10, y, 85, 70, 3, C.card, C.border);
+    // Card 1: Original Image
+    roundRect(doc, 10, y, 60, 70, 3, C.card, C.border);
     setTxt(doc, C.muted);
     doc.setFontSize(6);
     doc.setFont('helvetica', 'bold');
-    doc.text('ANALYSED IMAGE', 14, y + 6);
+    doc.text('ORIGINAL SCAN', 14, y + 6);
     try {
-      doc.addImage(imageDataUrl, 'JPEG', 12, y + 9, 81, 57, undefined, 'FAST');
+      doc.addImage(imageDataUrl, 'JPEG', 12, y + 9, 56, 49, undefined, 'FAST');
     } catch {
       setTxt(doc, C.dimmed);
-      doc.setFontSize(7);
-      doc.text('[Image preview unavailable]', 52.5, y + 38, { align: 'center' });
+      doc.setFontSize(6);
+      doc.text('[Unavailable]', 40, y + 34, { align: 'center' });
     }
     setFill(doc, [...accentCol, 200]);
-    doc.roundedRect(14, y + 62, 30, 7, 1.5, 1.5, 'F');
+    doc.roundedRect(14, y + 61, 24, 6, 1.5, 1.5, 'F');
     setTxt(doc, [10, 10, 15]);
-    doc.setFontSize(6.5);
+    doc.setFontSize(5.5);
     doc.setFont('helvetica', 'bold');
-    doc.text(prediction.toUpperCase(), 29, y + 66.5, { align: 'center' });
+    doc.text('INPUT', 26, y + 65, { align: 'center' });
+
+    // Card 2: Grad-CAM Overlay
+    roundRect(doc, 73, y, 60, 70, 3, C.card, C.border);
+    setTxt(doc, C.muted);
+    doc.setFontSize(6);
+    doc.setFont('helvetica', 'bold');
+    doc.text('GRAD-CAM OVERLAY', 77, y + 6);
+    if (result.overlay_image) {
+      try {
+        doc.addImage(`data:image/png;base64,${result.overlay_image}`, 'PNG', 75, y + 9, 56, 49, undefined, 'FAST');
+      } catch {
+        setTxt(doc, C.dimmed);
+        doc.setFontSize(6);
+        doc.text('[Grad-CAM Error]', 103, y + 34, { align: 'center' });
+      }
+    } else {
+      setTxt(doc, C.dimmed);
+      doc.setFontSize(6);
+      doc.text('[Unavailable]', 103, y + 34, { align: 'center' });
+    }
+    setFill(doc, [...C.purple, 200]);
+    doc.roundedRect(77, y + 61, 24, 6, 1.5, 1.5, 'F');
+    setTxt(doc, [10, 10, 15]);
+    doc.setFontSize(5.5);
+    doc.setFont('helvetica', 'bold');
+    doc.text(prediction.toUpperCase(), 89, y + 65, { align: 'center' });
   }
 
-  const aiX = imageDataUrl ? 99 : 10;
-  const aiW = imageDataUrl ? W - 109 : W - 20;
+  const aiX = imageDataUrl ? 136 : 10;
+  const aiW = imageDataUrl ? 64 : W - 20;
   roundRect(doc, aiX, y, aiW, 70, 3, C.card, C.border);
   setTxt(doc, C.muted);
   doc.setFontSize(6);
@@ -177,14 +204,14 @@ export const generateForensicReport = async (result, imageDataUrl) => {
 
   if (gemini_powered) {
     setFill(doc, C.cyan);
-    doc.roundedRect(aiX + aiW - 28, y + 2, 26, 6, 1.5, 1.5, 'F');
+    doc.roundedRect(aiX + aiW - 20, y + 2, 16, 5, 1.5, 1.5, 'F');
     setTxt(doc, [10, 10, 15]);
-    doc.setFontSize(5.5);
-    doc.text('GEMINI AI', aiX + aiW - 15, y + 5.8, { align: 'center' });
+    doc.setFontSize(4.5);
+    doc.text('GEMINI AI', aiX + aiW - 12, y + 5.5, { align: 'center' });
   }
 
   setTxt(doc, C.white);
-  doc.setFontSize(7.5);
+  doc.setFontSize(7);
   doc.setFont('helvetica', 'normal');
   const analysisLines = doc.splitTextToSize(ai_analysis || 'No analysis available.', aiW - 8);
   doc.text(analysisLines, aiX + 4, y + 14);

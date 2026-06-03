@@ -1,32 +1,50 @@
-/**
- * Main layout wrapper — provides the dark grid background,
- * ambient glow orbs, and consistent page structure.
- */
+import { useEffect, useRef } from 'react';
 
 const MainLayout = ({ children }) => {
-  return (
-    <div className="relative min-h-screen bg-dark-50 overflow-x-hidden">
+  const containerRef = useRef(null);
 
-      {/* Ambient background grid */}
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const handleMouseMove = (e) => {
+      const rect = container.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      
+      container.style.setProperty('--x', `${x}px`);
+      container.style.setProperty('--y', `${y}px`);
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
+
+  return (
+    <div 
+      ref={containerRef}
+      className="relative min-h-screen bg-[#03030d] overflow-x-hidden spotlight-bg"
+    >
+      {/* Dynamic Ambient Background Grid */}
       <div className="fixed inset-0 bg-grid opacity-100 pointer-events-none" />
 
-      {/* Top glow orb */}
+      {/* Top Center purple glow orb */}
       <div
-        className="fixed top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] pointer-events-none"
+        className="fixed top-0 left-1/2 -translate-x-1/2 w-[900px] h-[450px] pointer-events-none z-0"
         style={{
-          background: 'radial-gradient(ellipse at center, rgba(0,212,255,0.08) 0%, transparent 70%)',
+          background: 'radial-gradient(ellipse at center, rgba(124, 58, 237, 0.06) 0%, transparent 70%)',
         }}
       />
 
-      {/* Bottom-right purple orb */}
+      {/* Bottom Right cyan glow orb */}
       <div
-        className="fixed bottom-0 right-0 w-[500px] h-[500px] pointer-events-none"
+        className="fixed bottom-0 right-0 w-[600px] h-[600px] pointer-events-none z-0"
         style={{
-          background: 'radial-gradient(ellipse at bottom right, rgba(124,58,237,0.07) 0%, transparent 70%)',
+          background: 'radial-gradient(ellipse at bottom right, rgba(0, 212, 255, 0.04) 0%, transparent 75%)',
         }}
       />
 
-      {/* Content */}
+      {/* Content wrapper */}
       <div className="relative z-10">
         {children}
       </div>

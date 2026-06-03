@@ -1,194 +1,201 @@
-# FakeProof Labs — Forensic Face Authenticity Analysis Platform
+# FakeProof Labs — AI-Powered Face Forensic Authenticity Platform
 
-FakeProof Labs is a high-performance deep learning forensic platform that performs explainable authenticity analysis on human face images. The system detects AI-generated, synthetic, or manipulated human faces and provides explainable spatial visualizations of the model's decision using Grad-CAM alongside professional narrative forensic reports powered by Gemini AI.
-
-> [!IMPORTANT]
-> **Domain Constraint**: This platform is NOT a general AI-image detector. It is built and calibrated specifically for **Human Face Authenticity Analysis** (Real Human Faces vs. Fake, Synthetic, or Manipulated Human Faces). Testing non-face images will result in invalid predictions.
+FakeProof Labs is an advanced digital media forensics platform built to detect deepfakes, synthetic faces, and facial manipulations. The platform utilizes deep convolutional neural networks (CNNs), Grad-CAM neural attention mappings, and AI-powered forensic explanations to analyze, explain, and document the authenticity of human face media.
 
 ---
 
-## Features
+## PROJECT OVERVIEW
 
-- **Binary Authenticity Classification**: Classifies face images as either **Real** (Authentic) or **Fake** (Synthetic/Manipulated).
-- **Grad-CAM Spatial Explainability**: Highlights the specific facial features and regions (e.g. eyes, mouth, nose, skin boundaries) that influenced the CNN's decision.
-- **Saturated Gradient Prevention**: Uses raw logit extraction to guarantee sharp, high-contrast attention maps even for highly confident ($100\%$) predictions.
-- **AI-Powered Forensic Narratives**: Generates professional, cybersecurity-style narrative reports using Gemini AI.
-- **Forensic Dashboard**: Interactive user interface featuring webcam capture, drag-and-drop uploads, visual overlays, and report export capabilities (PDF/Image).
+### Features
+* **Binary Face Classification**: Instantly detects and classifies media as **Real** (authentic photographic human face) or **Fake** (synthetic, manipulated, or deepfake face).
+* **Grad-CAM Explainability (XAI)**: Generates spatial heatmap activation maps indicating which regions of the face (e.g., mouth, eyes, boundaries) influenced the model's prediction.
+* **Dual-Language Hybrid Explanations**: Generates forensic explanations in a professional analytical tone using generative Google Gemini AI, with structured offline fallbacks.
+* **Premium Interactive Workspace**: Real-time webcam capture, file drag-and-drop, interactive blend slider adjustments, and session history archive registry.
+* **Cryptographic PDF Exporter**: Compiles forensic findings, original/heatmap/overlay images, confidence meters, and digital signatures into an official report.
 
----
+### Technology Stack
+* **Frontend**: React (Vite, Framer Motion, Axios, TailwindCSS, jsPDF)
+* **Backend**: FastAPI (Python, TensorFlow, Keras, Pillow, Google GenAI SDK)
+* **Models**: TensorFlow/Keras CNN (`models/best_model.h5`)
 
-## Architecture
-
-FakeProof Labs is structured as a decoupled full-stack application:
-
+### Architecture
 ```mermaid
 graph TD
-    Client[React Frontend] -->|Image Upload / Webcam| API[FastAPI Backend]
+    Client[React Frontend] -->|Image/Webcam Upload| API[FastAPI Backend]
     API --> Preproc[Image Preprocessor]
     Preproc --> Inference[TensorFlow Model Service]
     Inference --> GradCAM[Grad-CAM Service]
-    GradCAM --> Logits[Raw Logits Extraction]
-    Logits --> Heatmap[Heatmap & Overlay Service]
+    GradCAM --> Heatmap[Heatmap & Overlay Service]
     API --> Gemini[Gemini AI Explanations]
-    Gemini --> Payload[Enriched API Response]
-    Payload --> Client
+    Payload[Enriched API Response] --> Client
+    Gemini --> Payload
+    Inference --> Payload
+    Heatmap --> Payload
 ```
 
-- **Backend**: FastAPI web server running TensorFlow 2.21.0 and Keras 3.14.1 for real-time inference and Grad-CAM execution.
-- **Frontend**: React + Vite single-page application utilizing Framer Motion for premium forensic-grade micro-animations and TailwindCSS for responsive layout.
-
 ---
 
-## Model Information
-
-- **Architecture**: Sequential CNN with alternate Conv2D, BatchNormalization, and MaxPooling2D blocks, ending with a Dense(256) and a final Dense(1) classification unit.
-- **Input Spec**: $224 \times 224$ RGB image, normalized to $[0, 1]$ range.
-- **Class Mappings**: 
-  - `0 = Fake` (Synthetic, Deepfake, or Manipulated Face)
-  - `1 = Real` (Authentic Photographic Human Face)
-- **Label Inversion Safety**: Supports the `INVERT_LABELS` setting to adjust interpretation on early or inverted checkpoints without retraining.
-
----
-
-## Grad-CAM Explainability
-
-FakeProof Labs implements a robust, state-of-the-art Grad-CAM explainability pipeline optimized for **Keras 3 / TensorFlow 2.x**:
-
-1. **Dynamic Model Traversal**: To bypass Keras 3's Functional graph restrictions on loaded Sequential models, the service dynamically rebuilds a Functional graph by traversing the model layers, ensuring input/output symbolic nodes are correctly traced.
-2. **Sigmoidal Gradient Saturation Bypass**: If a model is $100\%$ confident, the derivative of the sigmoid function collapses to exactly `0.0`. FakeProof Labs solves this by extracting the raw logit ($L = W \cdot x + b$) from the final layer using `keras.ops` before activation, guaranteeing distinct, high-contrast heatmaps for all predictions.
-
----
-
-## Gemini Integration
-
-The platform leverages the modern `google-genai` SDK to generate professional cybersecurity-analyst forensic write-ups.
-- **Dynamic prompts**: Contextualized based on the classification label and confidence.
-- **Passive Forensic Voice**: Reports are generated in an analytical, professional forensic voice (avoiding phrases like *"I see"*).
-- **Asynchronous Execution**: External Gemini calls run in a background thread-pool executor (`loop.run_in_executor`) to prevent blocking FastAPI's main event loop.
-
----
-
-## Project Structure
+## PROJECT STRUCTURE
 
 ```
 deepfake-Projectexpo/
-├── assets/                  # Reference confusion matrices, ROC curves, and assets
-├── backend/                 # FastAPI Backend Code
+├── assets/                  # Training curves, confusion matrices, and web assets
+├── backend/                 # FastAPI Web Server Code
 │   ├── config/              # Central settings and CORS configurations
 │   ├── routes/              # API Route controllers (predict, health)
 │   ├── services/            # Core services (model loading, Grad-CAM, Heatmaps, Gemini)
 │   ├── utils/               # Image preprocessors & diagnostic tools
 │   ├── requirements.txt     # Python backend dependencies
-│   └── app.py               # Main entry point
-├── frontend/                # React Frontend Code
-│   ├── src/                 # React source code (components, layouts, hooks, services)
-│   ├── package.json         # Node.js frontend dependencies
-│   └── vite.config.js       # Vite build configurations
-├── models/                  # Saved binary weights
-│   └── best_model.h5        # Trained TensorFlow CNN checkpoint (59 MB)
+│   └── app.py               # Main FastAPI entry point
+├── frontend/                # React Single-Page Application (SPA)
+│   ├── src/                 # React source code
+│   │   ├── components/      # UI components (Navbar, ResultsDashboard, etc.)
+│   │   ├── config/          # Central API endpoint settings
+│   │   ├── hooks/           # Connection polling hooks
+│   │   └── services/        # Axios API handlers
+│   ├── package.json         # Node.js dependencies
+│   └── vite.config.js       # Vite bundler configurations
+├── models/                  # Trained Model Weights
+│   └── best_model.h5        # Trained binary CNN weights
 └── README.md                # System documentation
 ```
 
 ---
 
-## Installation
-
-### Prerequisites
-- Python 3.11 or 3.12
-- Node.js (v18 or higher)
+## SETUP GUIDE
 
 ### Backend Setup
-
-1. Navigate to the backend directory and create a virtual environment:
-   ```powershell
+1. Navigate to the backend directory and initialize the virtual environment:
+   ```bash
    cd backend
    python -m venv .venv
-   .\.venv\Scripts\Activate.ps1
+   .\.venv\Scripts\activate
    ```
-2. Install dependencies:
-   ```powershell
+2. Install the required libraries:
+   ```bash
    pip install -r requirements.txt
    ```
-3. Initialize the environment configuration:
-   ```powershell
+3. Initialize configuration:
+   ```bash
    copy .env.example .env
    ```
-4. Configure `.env` variables:
-   - `GEMINI_API_KEY`: Your Google AI Studio API key.
-   - `GEMINI_ENABLED`: Set to `True` or `False`.
-   - `INVERT_LABELS`: Set to `True` if testing an inverted model checkpoint.
-5. Launch the FastAPI server:
-   ```powershell
+4. Start the FastAPI Uvicorn server:
+   ```bash
    uvicorn app:app --host 0.0.0.0 --port 8000 --reload
    ```
 
 ### Frontend Setup
-
 1. Navigate to the frontend directory:
-   ```powershell
-   cd ../frontend
+   ```bash
+   cd frontend
    ```
 2. Install node packages:
-   ```powershell
+   ```bash
    npm install
    ```
 3. Launch the development server:
-   ```powershell
+   ```bash
    npm run dev
    ```
-   The UI will be accessible at [http://localhost:5173](http://localhost:5173).
+   The application will be available at [http://localhost:5173/](http://localhost:5173/).
 
 ---
 
-## API Endpoints
+## HEALTH CHECK
 
-### `POST /api/predict`
-Accepts a multipart file upload containing a face image and returns the full authenticity classification payload.
+To verify the platform is fully responsive, open the health endpoint in your browser:
+* **URL**: [http://127.0.0.1:8000/api/health](http://127.0.0.1:8000/api/health)
 
-#### Example API Response
+### Expected Response
 ```json
 {
-  "prediction": "Real",
-  "confidence": 99.54,
-  "processing_time": 284.7,
-  "ai_analysis": "The analysis of the submitted image indicates characteristics consistent with authentic photographic capture. The presence of natural noise distribution and organic texture variance supports this authenticity verdict. No digital manipulation signatures or synthetic artifacts were detected.",
-  "gemini_powered": true,
-  "gradcam_score": 41,
-  "heatmap_image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUg...",
-  "overlay_image": "data:image/png;base64,iVBORw0KGgoAAAANS...",
-  "original_image": "data:image/png;base64,iVBORw0KGgoAAAANSUh...",
-  "status": "success"
+  "status": "healthy",
+  "backend": true,
+  "model_loaded": true,
+  "model_error": null,
+  "gemini_available": true,
+  "gradcam_available": true,
+  "timestamp": "2026-06-03T09:11:42.199121+00:00",
+  "version": "2.0.0"
 }
 ```
 
-### `GET /api/health`
-Returns backend service statuses, model loaded status, and Gemini AI availability.
+---
+
+## GEMINI SETUP
+
+FakeProof Labs generates cybersecurity forensic summaries using Google Gemini models:
+1. Obtain an API Key from [Google AI Studio](https://aistudio.google.com/).
+2. In `backend/.env`, set the key:
+   ```env
+   GEMINI_API_KEY="AIzaSyYourGeminiApiKeyHere"
+   GEMINI_ENABLED=True
+   GEMINI_MODEL=gemini-1.5-flash
+   ```
+3. Upon backend launch, the log will display:
+   `✅ Gemini AI explanation service is ACTIVE.`
 
 ---
 
-## Troubleshooting
+## MODEL SETUP
 
-- **Model Load Fails (`BatchedNormalization` Error)**: Occurs if the checkpoint is loaded with compilation mode. The model service automatically recovers by loading with `compile=False`.
-- **Vanishing Heatmaps (All Zeros)**: If you experience blank Grad-CAM outputs, ensure that `gradcam_service.py` is utilizing `manual logit extraction` via `keras.ops` instead of standard probability tensors.
-- **Gemini Falling Back to Static Explanations**: Verify your `GEMINI_API_KEY` is correctly set in `backend/.env` and that your local environment has internet access to Google's API servers.
-
----
-
-## Known Limitations
-
-- **Face Image Constraint**: Non-face images (e.g. landscapes, vehicles) will still return a classification label but the results are forensically invalid. Use only cropped human face images.
-- **Single-Face Constraint**: If an image contains multiple faces, the model will classify based on the dominant face or mix feature cues, reducing accuracy.
+The deep learning model is located in the `models/` directory:
+* **Path**: `models/best_model.h5`
+* **Structure**: Alternate Conv2D, BatchNormalization, and MaxPooling2D layers. It classifies $224 \times 224 \times 3$ normalized tensors.
+* **Verification**: Run `python backend/utils/model_diagnostics.py` to confirm layers shape, canonical class mappings, and perform verification tests.
 
 ---
 
-## Future Improvements
+## GRAD-CAM VERIFICATION
 
-- **Automatic Face Detection & Cropping**: Integrate a pre-processing face detector (like MediaPipe or MTCNN) to automatically isolate faces before feeding them into the classifier.
-- **Batch Processing**: Support processing multi-face images or uploading batches of images.
-- **Dockerization**: Provide a unified `docker-compose.yml` to spin up both frontend and backend instantly.
+Use the provided command-line utility to run inference and verify Grad-CAM attention visualizations independently of the browser:
+```bash
+python backend/utils/verify_gradcam.py --image path/to/your/image.jpg
+```
+The script will output classification details and save the following verification images in `backend/debug_gradcam/`:
+* `original.png`: Rescaled $224 \times 224$ input scan.
+* `heatmap.png`: Raw Jet-colored neural attention heatmap.
+* `overlay.png`: Original image blended linearly with the attention heatmap.
 
 ---
 
-## Contributors
+## COMMON ERRORS
 
-- **FakeProof Labs Core Team**
+### Server Offline
+* **Cause**: Windows hostname resolution maps `localhost` to IPv6 `[::1]`, while Uvicorn binds only to IPv4.
+* **Fix**: Ensure the frontend points explicitly to `http://127.0.0.1:8000` rather than `localhost` (configured automatically in [api.config.js](file:///c:/Deepfake-Detector/deepfake-Projectexpo/frontend/src/config/api.config.js)).
+
+### Model Not Loaded
+* **Cause**: Missing `models/best_model.h5` file, or Keras version incompatibility.
+* **Fix**: Run `model_diagnostics.py` to verify the model file integrity and ensure uvicorn starts without load exceptions.
+
+### Gemini Error (Static Fallback)
+* **Cause**: Expired API Key or no internet connection.
+* **Fix**: Verify your network connectivity and double-check your Gemini API Key in `backend/.env`.
+
+### Grad-CAM Failure (Blank Heatmaps)
+* **Cause**: Highly confident predictions saturate Sigmoid output derivatives, collapsing gradient values to `0.0`.
+* **Fix**: FakeProof Labs implements manual logit extraction to capture pre-activation gradients, ensuring sharp maps for all confidence scores.
+
+### Port Conflict
+* **Cause**: Another process using port `8000` or `5173`.
+* **Fix**: Kill existing uvicorn/node processes or run Uvicorn on a different port and update the frontend configuration.
+
+### CORS Issues
+* **Cause**: Requests originated from unlisted hostnames.
+* **Fix**: Ensure origin URL is explicitly defined in `backend/config/settings.py` `ALLOWED_ORIGINS`.
+
+---
+
+## EXPO DAY STARTUP CHECKLIST
+
+Perform these validation checks on Expo day before demonstration:
+- [ ] **Backend Server**: Run `uvicorn app:app --host 0.0.0.0 --port 8000 --reload` and check console for startup banner.
+- [ ] **Frontend Client**: Run `npm run dev` and ensure browser loads `http://localhost:5173/`.
+- [ ] **Health Endpoint**: Load `http://127.0.0.1:8000/api/health` and verify `"status": "healthy"`.
+- [ ] **Model Loaded**: Ensure `"model_loaded": true` in health response payload.
+- [ ] **Gemini Active**: Check health response contains `"gemini_available": true`.
+- [ ] **Test Prediction**: Drag a demo image into the workspace, run the authenticity scan, and verify prediction and confidence values display.
+- [ ] **Grad-CAM Rendering**: Check that the dashboard renders three distinct columns: Original, Heatmap, and Overlay.
+- [ ] **PDF Export**: Click "Download PDF Report" and verify the generated PDF contains the classification details, layout, and images.
+- [ ] **Navbar Status**: Confirm the Navbar header shows a green **🟢 System Active** badge.
