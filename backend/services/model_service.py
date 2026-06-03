@@ -111,7 +111,24 @@ class ModelService:
             return False
 
         self._model = model
-        logger.info("✅ Model loaded successfully.")
+        
+        # ── Mandatory Logging ──────────────────────────────────────────────────
+        logger.info("Model loaded successfully")
+        logger.info(f"TensorFlow version: {tf.__version__}")
+        keras_version = tf.keras.__version__ if hasattr(tf.keras, "__version__") else "unknown"
+        logger.info(f"Keras version: {keras_version}")
+        
+        try:
+            logger.info(f"Model input tensor: {self._model.input}")
+        except Exception as e:
+            logger.info(f"Model input tensor (dynamic shape check): {self._model.input_shape}")
+            
+        try:
+            logger.info(f"Model output tensor: {self._model.output}")
+        except Exception as e:
+            logger.info(f"Model output tensor (dynamic shape check): {self._model.output_shape}")
+        # ──────────────────────────────────────────────────────────────────────
+
         logger.info(f"   Input  shape  : {self._model.input_shape}")
         logger.info(f"   Output shape  : {self._model.output_shape}")
         logger.info("   Class mapping : 0=Fake, 1=Real")

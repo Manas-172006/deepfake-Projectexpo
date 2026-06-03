@@ -16,9 +16,9 @@ Reference: Selvaraju et al., 2017 — https://arxiv.org/abs/1610.02391
 
 import logging
 import numpy as np
-from pathlib import Path
-from typing import Optional, Tuple, Dict
+from typing import Optional
 import tensorflow as tf
+import keras
 
 logger = logging.getLogger(__name__)
 
@@ -43,6 +43,7 @@ class GradCAMService:
         model: tf.keras.Model,
         preprocessed_image: np.ndarray,
         target_class_index: int = 0,
+        invert_labels: bool = False,
     ) -> Optional[np.ndarray]:
         """
         Compute a Grad-CAM heatmap for *preprocessed_image*.
@@ -52,52 +53,82 @@ class GradCAMService:
         model               : loaded Keras model
         preprocessed_image  : (1, H, W, 3) float32 array, values in [0, 1]
         target_class_index  : output neuron index (0 for binary sigmoid)
+        invert_labels       : flip mapping for binary classification if needed
 
         Returns
         -------
         heatmap : (H, W) float32 array, values in [0, 1], or None on failure
-
-        Note
-        ----
-        Uses conv2d_3 as the last conv layer (from Training.ipynb).
-        For binary classification, we compute gradients of the raw sigmoid output.
         """
         try:
+            logger.info(f"TensorFlow version: {tf.__version__}")
+            keras_version = tf.keras.__version__ if hasattr(tf.keras, "__version__") else "unknown"
+            logger.info(f"Keras version: {keras_version}")
+
             last_conv = self._find_last_conv_layer(model)
             if last_conv is None:
-                logger.warning("No Conv2D layer found — Grad-CAM unavailable.")
-                return None
+                raise ValueError("No Conv2D layer found in the model.")
 
-            logger.info(
-                f"Grad-CAM using layer: {last_conv.name} "
-                f"(expected: conv2d_3 from notebook)"
-            )
+            logger.info("Last convolutional layer found")
+            logger.info(f"Layer name: {last_conv.name}")
+            logger.info(f"Layer type: {type(last_conv).__name__}")
+            try:
+                logger.info(f"Layer output shape: {last_conv.output_shape}")
+            except Exception as e:
+                logger.info(f"Layer output shape: shape attributes not initialized ({e})")
 
-            # Build a sub-model that outputs (conv_activations, predictions)
+            # ── 1. Reconstruct functional sub-model via layer traversal ──────
+            input_tensor = tf.keras.Input(shape=(224, 224, 3))
+            x = input_tensor
+            last_conv_output = None
+            
+            # Apply all layers up to the second-to-last layer
+            for layer in model.layers[:-1]:
+                x = layer(x)
+                if layer is last_conv:
+                    last_conv_output = x
+            
+            # Extract logit manually from the final layer to prevent sigmoid gradient saturation
+            last_layer = model.layers[-1]
+            if hasattr(last_layer, "kernel") and last_layer.kernel is not None:
+                logit = keras.ops.matmul(x, last_layer.kernel)
+                if getattr(last_layer, "bias", None) is not None:
+                    logit = keras.ops.add(logit, last_layer.bias)
+            else:
+                logit = last_layer(x)
+            
             grad_model = tf.keras.Model(
-                inputs=model.inputs,
-                outputs=[last_conv.output, model.output],
+                inputs=input_tensor,
+                outputs=[last_conv_output, logit],
             )
+            
+            # Log the output shape of the conv layer from our newly constructed graph
+            logger.info(f"Reconstructed layer output shape: {last_conv_output.shape}")
 
             img_tensor = tf.cast(preprocessed_image, tf.float32)
 
+            logger.info("Gradient computation started")
             with tf.GradientTape() as tape:
                 tape.watch(img_tensor)
-                conv_outputs, predictions = grad_model(img_tensor, training=False)
+                conv_outputs, logits = grad_model(img_tensor, training=False)
 
-                # For binary sigmoid: use the raw output score
-                # For multi-class softmax: use predictions[:, target_class_index]
-                if predictions.shape[-1] == 1:
-                    class_score = predictions[:, 0]
+                # For binary sigmoid (logit shape [-1] == 1):
+                # We explain the logit directly. Real is class 1, Fake is class 0.
+                if logits.shape[-1] == 1:
+                    p_logit = logits[:, 0]
+                    if not invert_labels:
+                        class_score = p_logit if target_class_index == 1 else -p_logit
+                    else:
+                        class_score = -p_logit if target_class_index == 1 else p_logit
                 else:
-                    class_score = predictions[:, target_class_index]
+                    # Multi-class softmax logits
+                    class_score = logits[:, target_class_index]
 
             # Gradients of class score w.r.t. conv feature maps
             grads = tape.gradient(class_score, conv_outputs)  # (1, h, w, C)
+            logger.info("Gradient computation completed")
 
             if grads is None:
-                logger.warning("Gradient tape returned None — model may not be differentiable.")
-                return None
+                raise ValueError("Gradient computation failed. Gradient tape returned None.")
 
             # Global average pooling over spatial dims → (C,)
             pooled_grads = tf.reduce_mean(grads, axis=(0, 1, 2))
@@ -114,14 +145,21 @@ class GradCAMService:
             heatmap = self._normalise(heatmap)
 
             logger.info(
-                f"Grad-CAM generated  shape={heatmap.shape}  "
+                f"Heatmap generated  shape={heatmap.shape}  "
                 f"min={heatmap.min():.3f}  max={heatmap.max():.3f}"
             )
             return heatmap.astype(np.float32)
 
         except Exception as exc:
-            logger.error(f"Grad-CAM generation failed: {exc}", exc_info=True)
-            return None
+            import traceback
+            tb = traceback.format_exc()
+            logger.error(
+                f"Grad-CAM generation failed due to exception.\n"
+                f"Exception type: {type(exc).__name__}\n"
+                f"Exception details: {exc}\n"
+                f"Traceback:\n{tb}"
+            )
+            raise exc
 
     def compute_attention_score(self, heatmap: np.ndarray) -> int:
         """

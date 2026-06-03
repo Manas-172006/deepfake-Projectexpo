@@ -129,10 +129,12 @@ async def predict_deepfake(file: UploadFile = File(...)):
                     model_service._model,
                     preprocessed,
                     target_class_index=target_class,
+                    invert_labels=model_service.invert_labels,
                 ),
             )
 
             if heatmap is not None:
+                logger.info("Heatmap generated")
                 gradcam_score = gradcam_service.compute_attention_score(heatmap)
 
                 output_size = (settings.IMAGE_SIZE[1], settings.IMAGE_SIZE[0])  # (W, H)
@@ -145,16 +147,27 @@ async def predict_deepfake(file: UploadFile = File(...)):
                     None,
                     lambda: heatmap_service.overlay_to_base64(file_path, heatmap, alpha=0.45, output_size=output_size),
                 )
+                logger.info("Overlay generated")
+                
                 original_b64 = await loop.run_in_executor(
                     None,
                     lambda: heatmap_service.original_to_base64(file_path, output_size),
                 )
+                
+                logger.info("Base64 encoding completed")
                 logger.info(f"Grad-CAM complete  score={gradcam_score}")
             else:
                 logger.warning("Grad-CAM returned None — skipping visualisation.")
 
         except Exception as gc_exc:
-            logger.warning(f"Grad-CAM pipeline failed (non-fatal): {gc_exc}")
+            import traceback
+            tb = traceback.format_exc()
+            logger.error(
+                f"Grad-CAM pipeline failed (non-fatal) due to exception.\n"
+                f"Exception type: {type(gc_exc).__name__}\n"
+                f"Exception details: {gc_exc}\n"
+                f"Traceback:\n{tb}"
+            )
 
         # ── Gemini explanation ────────────────────────────────────────────────
         ai_analysis = await gemini_service.generate_explanation(
@@ -175,6 +188,7 @@ async def predict_deepfake(file: UploadFile = File(...)):
             "original_image":  original_b64,
             "status":          "success",
         }
+        logger.info("Response payload generated")
 
         logger.info(
             f"Analysis complete: {prediction} ({confidence}%)  "
