@@ -3,8 +3,7 @@
  */
 
 import axios from 'axios';
-
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+import { API_BASE_URL, HEALTH_ENDPOINT, PREDICT_ENDPOINT } from '../config/api.config';
 
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
@@ -27,7 +26,7 @@ export const predictImage = async (imageFile) => {
     const formData = new FormData();
     formData.append('file', imageFile);
 
-    const { data } = await apiClient.post('/api/predict', formData, {
+    const { data } = await apiClient.post(PREDICT_ENDPOINT, formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
     });
 
@@ -55,11 +54,17 @@ export const predictImage = async (imageFile) => {
  * @returns {Promise<{ success: boolean, data?: object }>}
  */
 export const checkHealth = async () => {
+  const cacheBustUrl = `${HEALTH_ENDPOINT}?t=${Date.now()}`;
+  const fullUrl = `${API_BASE_URL}${cacheBustUrl}`;
   try {
-    const { data } = await apiClient.get('/api/health');
-    return { success: true, data };
-  } catch {
-    return { success: false, error: 'Health check failed.' };
+    const response = await apiClient.get(cacheBustUrl);
+    console.log(`[Health Diagnostic] URL: ${fullUrl} | Status: ${response.status} | Payload:`, response.data);
+    return { success: true, data: response.data, status: response.status };
+  } catch (err) {
+    const status = err.response ? err.response.status : 'N/A';
+    const payload = err.response ? err.response.data : err.message;
+    console.error(`[Health Diagnostic Error] URL: ${fullUrl} | Status: ${status} | Payload:`, payload);
+    return { success: false, error: 'Health check failed.', status };
   }
 };
 

@@ -10,9 +10,5 @@ venv/
 /.idea/
 node_modules/
 dist/
-build/data/
-models/training_checkpoints/*.h5est
-__pycache__/
+build/
 .ipynb_checkpoints/
-*.pyc
-.env

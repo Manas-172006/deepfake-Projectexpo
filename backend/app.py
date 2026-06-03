@@ -1,5 +1,5 @@
 """
-FakeProof Labs — FastAPI application entry point.
+FakeProof Labs — FastAPI application entry point. 
 Configures CORS, structured startup logging, and route registration.
 """
 
