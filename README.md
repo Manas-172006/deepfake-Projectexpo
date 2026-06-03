@@ -1,174 +1,194 @@
-# DeepScan — AI-Powered Deepfake Detection
+# FakeProof Labs — Forensic Face Authenticity Analysis Platform
 
-> "Every deepfake we detect is a digital identity we protect, a truth we preserve, and a future we secure."
+FakeProof Labs is a high-performance deep learning forensic platform that performs explainable authenticity analysis on human face images. The system detects AI-generated, synthetic, or manipulated human faces and provides explainable spatial visualizations of the model's decision using Grad-CAM alongside professional narrative forensic reports powered by Gemini AI.
 
-Built by **FakeProof Labs** | S-VYASA Deemed to be University | AIONAI Club | Expo: April 23, 2025
-
----
-
-## What is this?
-
-DeepScan is an AI-powered system that detects whether a face image is real or AI-generated (deepfake) — and explains *why*. Unlike existing detectors that act as black boxes, DeepScan highlights the exact facial regions that triggered the decision using Grad-CAM heatmaps.
+> [!IMPORTANT]
+> **Domain Constraint**: This platform is NOT a general AI-image detector. It is built and calibrated specifically for **Human Face Authenticity Analysis** (Real Human Faces vs. Fake, Synthetic, or Manipulated Human Faces). Testing non-face images will result in invalid predictions.
 
 ---
 
-## The problem
+## Features
 
-With the rapid rise of AI-generated media, deepfakes have become increasingly realistic and accessible. This creates serious risks in misinformation, digital fraud, identity misuse, and erosion of trust in visual content. Most detection tools give a verdict with no explanation — which limits trust and practical usability.
-
----
-
-## Our solution
-
-A deep learning pipeline that:
-
-- Detects whether an uploaded face image is **real or fake**
-- Provides a **confidence score** (e.g. 87% fake)
-- Generates a **Grad-CAM heatmap** showing which facial regions were suspicious
-- Explains the verdict in plain language (e.g. "Unnatural blending detected around eye region and jaw boundary")
+- **Binary Authenticity Classification**: Classifies face images as either **Real** (Authentic) or **Fake** (Synthetic/Manipulated).
+- **Grad-CAM Spatial Explainability**: Highlights the specific facial features and regions (e.g. eyes, mouth, nose, skin boundaries) that influenced the CNN's decision.
+- **Saturated Gradient Prevention**: Uses raw logit extraction to guarantee sharp, high-contrast attention maps even for highly confident ($100\%$) predictions.
+- **AI-Powered Forensic Narratives**: Generates professional, cybersecurity-style narrative reports using Gemini AI.
+- **Forensic Dashboard**: Interactive user interface featuring webcam capture, drag-and-drop uploads, visual overlays, and report export capabilities (PDF/Image).
 
 ---
 
-## Results
+## Architecture
 
-| Metric | Score |
-|---|---|
-| Test Accuracy | **94.42%** |
-| Validation Accuracy | **94.4%** |
-| AUC-ROC | **0.9878** |
-| F1 Score (Fake) | **0.94** |
-| F1 Score (Real) | **0.94** |
-| Fake detection confidence (sample) | 100% |
-| Real detection confidence (sample) | 99.7% |
-| Fakes correctly caught (test set) | 9,349 / 10,000 |
-| Real images correctly identified | 9,536 / 10,000 |
+FakeProof Labs is structured as a decoupled full-stack application:
 
----
-
-## Grad-CAM results
-
-### Fake image — detected at 100% confidence
-![Fake image Grad-CAM](assets/gradcam_fake.png)
-
-*Red/warm regions show where the model detected deepfake artifacts — typically around face boundaries, forehead and jaw where GAN generation fails.*
-
-### Real image — detected at 99.7% confidence
-![Real image Grad-CAM](assets/gradcam_real.png)
-
-*Activation spread naturally across facial features — consistent with how real faces are structured.*
-
----
-
-## Evaluation plots
-
-### Confusion matrix
-![Confusion Matrix](assets/confusion_matrix.png)
-
-### ROC curve
-![ROC Curve](assets/roc_curve.png)
-
----
-
-## Tech stack
-
-| Component | Technology |
-|---|---|
-| Model | CNN (4 conv layers) built with TensorFlow/Keras |
-| Explainability | Grad-CAM heatmap overlay |
-| Dataset | 140k Real and Fake Faces (Kaggle, xhlulu) |
-| Frontend | Streamlit with custom CSS |
-| Training environment | Google Colab (T4 GPU) |
-| Version control | GitHub |
-
----
-
-## Dataset
-
-**140k Real and Fake Faces** by xhlulu on Kaggle
-
-- 70,000 real faces (sourced from Flickr)
-- 70,000 AI-generated fake faces (GAN-generated)
-- Pre-split into train / valid / test
-- Images resized to 224×224, normalized to 0–1
-
----
-
-## Model architecture
-
-```
-Input (224×224×3)
-→ Conv2D(32) + BatchNorm + MaxPooling      # detects edges, colours
-→ Conv2D(64) + BatchNorm + MaxPooling      # detects textures, skin patterns
-→ Conv2D(128) + BatchNorm + MaxPooling     # detects face parts
-→ Conv2D(128) + BatchNorm + MaxPooling     # detects deepfake artifacts
-→ Flatten
-→ Dense(256) + Dropout(0.5)
-→ Dense(1, sigmoid)                        # outputs confidence score 0–1
+```mermaid
+graph TD
+    Client[React Frontend] -->|Image Upload / Webcam| API[FastAPI Backend]
+    API --> Preproc[Image Preprocessor]
+    Preproc --> Inference[TensorFlow Model Service]
+    Inference --> GradCAM[Grad-CAM Service]
+    GradCAM --> Logits[Raw Logits Extraction]
+    Logits --> Heatmap[Heatmap & Overlay Service]
+    API --> Gemini[Gemini AI Explanations]
+    Gemini --> Payload[Enriched API Response]
+    Payload --> Client
 ```
 
-Total parameters: ~4.96 million
+- **Backend**: FastAPI web server running TensorFlow 2.21.0 and Keras 3.14.1 for real-time inference and Grad-CAM execution.
+- **Frontend**: React + Vite single-page application utilizing Framer Motion for premium forensic-grade micro-animations and TailwindCSS for responsive layout.
 
 ---
 
-## Project structure
+## Model Information
+
+- **Architecture**: Sequential CNN with alternate Conv2D, BatchNormalization, and MaxPooling2D blocks, ending with a Dense(256) and a final Dense(1) classification unit.
+- **Input Spec**: $224 \times 224$ RGB image, normalized to $[0, 1]$ range.
+- **Class Mappings**: 
+  - `0 = Fake` (Synthetic, Deepfake, or Manipulated Face)
+  - `1 = Real` (Authentic Photographic Human Face)
+- **Label Inversion Safety**: Supports the `INVERT_LABELS` setting to adjust interpretation on early or inverted checkpoints without retraining.
+
+---
+
+## Grad-CAM Explainability
+
+FakeProof Labs implements a robust, state-of-the-art Grad-CAM explainability pipeline optimized for **Keras 3 / TensorFlow 2.x**:
+
+1. **Dynamic Model Traversal**: To bypass Keras 3's Functional graph restrictions on loaded Sequential models, the service dynamically rebuilds a Functional graph by traversing the model layers, ensuring input/output symbolic nodes are correctly traced.
+2. **Sigmoidal Gradient Saturation Bypass**: If a model is $100\%$ confident, the derivative of the sigmoid function collapses to exactly `0.0`. FakeProof Labs solves this by extracting the raw logit ($L = W \cdot x + b$) from the final layer using `keras.ops` before activation, guaranteeing distinct, high-contrast heatmaps for all predictions.
+
+---
+
+## Gemini Integration
+
+The platform leverages the modern `google-genai` SDK to generate professional cybersecurity-analyst forensic write-ups.
+- **Dynamic prompts**: Contextualized based on the classification label and confidence.
+- **Passive Forensic Voice**: Reports are generated in an analytical, professional forensic voice (avoiding phrases like *"I see"*).
+- **Asynchronous Execution**: External Gemini calls run in a background thread-pool executor (`loop.run_in_executor`) to prevent blocking FastAPI's main event loop.
+
+---
+
+## Project Structure
 
 ```
 deepfake-Projectexpo/
-├── notebooks/
-│   └── Training.ipynb       ← full pipeline: training + Grad-CAM + evaluation
-├── src/                     ← preprocessing and utility scripts
-├── models/
-│   └── best_model.h5        ← trained model (94.4% val accuracy)
-├── app/                     ← Streamlit frontend
-├── assets/
-│   ├── gradcam_fake.png     ← Grad-CAM output on fake image
-│   ├── gradcam_real.png     ← Grad-CAM output on real image
-│   ├── confusion_matrix.png ← evaluation plot
-│   └── roc_curve.png        ← evaluation plot
-├── data/                    ← dataset (not pushed to GitHub)
-├── .gitignore
-└── README.md
+├── assets/                  # Reference confusion matrices, ROC curves, and assets
+├── backend/                 # FastAPI Backend Code
+│   ├── config/              # Central settings and CORS configurations
+│   ├── routes/              # API Route controllers (predict, health)
+│   ├── services/            # Core services (model loading, Grad-CAM, Heatmaps, Gemini)
+│   ├── utils/               # Image preprocessors & diagnostic tools
+│   ├── requirements.txt     # Python backend dependencies
+│   └── app.py               # Main entry point
+├── frontend/                # React Frontend Code
+│   ├── src/                 # React source code (components, layouts, hooks, services)
+│   ├── package.json         # Node.js frontend dependencies
+│   └── vite.config.js       # Vite build configurations
+├── models/                  # Saved binary weights
+│   └── best_model.h5        # Trained TensorFlow CNN checkpoint (59 MB)
+└── README.md                # System documentation
 ```
 
 ---
 
-## How to run
+## Installation
 
-**1. Clone the repo**
-```bash
-git clone https://github.com/Manas-172006/deepfake-Projectexpo.git
-cd deepfake-Projectexpo
-```
+### Prerequisites
+- Python 3.11 or 3.12
+- Node.js (v18 or higher)
 
-**2. Install dependencies**
-```bash
-pip install tensorflow streamlit opencv-python matplotlib scikit-learn seaborn
-```
+### Backend Setup
 
-**3. Download the dataset**
+1. Navigate to the backend directory and create a virtual environment:
+   ```powershell
+   cd backend
+   python -m venv .venv
+   .\.venv\Scripts\Activate.ps1
+   ```
+2. Install dependencies:
+   ```powershell
+   pip install -r requirements.txt
+   ```
+3. Initialize the environment configuration:
+   ```powershell
+   copy .env.example .env
+   ```
+4. Configure `.env` variables:
+   - `GEMINI_API_KEY`: Your Google AI Studio API key.
+   - `GEMINI_ENABLED`: Set to `True` or `False`.
+   - `INVERT_LABELS`: Set to `True` if testing an inverted model checkpoint.
+5. Launch the FastAPI server:
+   ```powershell
+   uvicorn app:app --host 0.0.0.0 --port 8000 --reload
+   ```
 
-Get the dataset from [Kaggle](https://www.kaggle.com/datasets/xhlulu/140k-real-and-fake-faces) and place it in the `data/` folder.
+### Frontend Setup
 
-**4. Run the app**
-```bash
-cd app
-streamlit run app.py
-```
+1. Navigate to the frontend directory:
+   ```powershell
+   cd ../frontend
+   ```
+2. Install node packages:
+   ```powershell
+   npm install
+   ```
+3. Launch the development server:
+   ```powershell
+   npm run dev
+   ```
+   The UI will be accessible at [http://localhost:5173](http://localhost:5173).
 
 ---
 
-## Status
+## API Endpoints
 
-- [x] CNN model trained — 94.42% test accuracy
-- [x] Grad-CAM heatmap visualization working
-- [x] Evaluation complete — AUC-ROC 0.9878, F1 0.94
-- [ ] Streamlit UI with confidence score display
-- [ ] Demo screenshots
+### `POST /api/predict`
+Accepts a multipart file upload containing a face image and returns the full authenticity classification payload.
+
+#### Example API Response
+```json
+{
+  "prediction": "Real",
+  "confidence": 99.54,
+  "processing_time": 284.7,
+  "ai_analysis": "The analysis of the submitted image indicates characteristics consistent with authentic photographic capture. The presence of natural noise distribution and organic texture variance supports this authenticity verdict. No digital manipulation signatures or synthetic artifacts were detected.",
+  "gemini_powered": true,
+  "gradcam_score": 41,
+  "heatmap_image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUg...",
+  "overlay_image": "data:image/png;base64,iVBORw0KGgoAAAANS...",
+  "original_image": "data:image/png;base64,iVBORw0KGgoAAAANSUh...",
+  "status": "success"
+}
+```
+
+### `GET /api/health`
+Returns backend service statuses, model loaded status, and Gemini AI availability.
 
 ---
 
-## Team
+## Troubleshooting
 
-**FakeProof Labs**
-S-VYASA Deemed to be University — AIONAI Club
-Project Expo — April 23, 2025
+- **Model Load Fails (`BatchedNormalization` Error)**: Occurs if the checkpoint is loaded with compilation mode. The model service automatically recovers by loading with `compile=False`.
+- **Vanishing Heatmaps (All Zeros)**: If you experience blank Grad-CAM outputs, ensure that `gradcam_service.py` is utilizing `manual logit extraction` via `keras.ops` instead of standard probability tensors.
+- **Gemini Falling Back to Static Explanations**: Verify your `GEMINI_API_KEY` is correctly set in `backend/.env` and that your local environment has internet access to Google's API servers.
+
+---
+
+## Known Limitations
+
+- **Face Image Constraint**: Non-face images (e.g. landscapes, vehicles) will still return a classification label but the results are forensically invalid. Use only cropped human face images.
+- **Single-Face Constraint**: If an image contains multiple faces, the model will classify based on the dominant face or mix feature cues, reducing accuracy.
+
+---
+
+## Future Improvements
+
+- **Automatic Face Detection & Cropping**: Integrate a pre-processing face detector (like MediaPipe or MTCNN) to automatically isolate faces before feeding them into the classifier.
+- **Batch Processing**: Support processing multi-face images or uploading batches of images.
+- **Dockerization**: Provide a unified `docker-compose.yml` to spin up both frontend and backend instantly.
+
+---
+
+## Contributors
+
+- **FakeProof Labs Core Team**

@@ -1,4 +1,16 @@
-data/
+/.env
+backend/.env
+models/*.h5
+__pycache__/
+.venv/
+venv/
+*.pyc
+*.pyo
+*.pyd
+/.idea/
+node_modules/
+dist/
+build/data/
 models/training_checkpoints/*.h5est
 __pycache__/
 .ipynb_checkpoints/

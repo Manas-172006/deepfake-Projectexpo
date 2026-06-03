@@ -1,0 +1,10 @@
+fastapi==0.100.0
+uvicorn==0.23.1
+pydantic==2.1.1
+pydantic-settings==2.0.3
+python-multipart==0.0.6
+tensorflow==2.21.0
+pillow==12.2.0
+numpy==2.4.5
+# Gemini AI — modern SDK (replaces deprecated google-generativeai)
+google-genai==1.16.0
