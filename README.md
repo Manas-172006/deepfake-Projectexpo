@@ -258,6 +258,10 @@ FakeProof Labs is designed to be easily deployed on modern cloud platforms.
 * **Full-Stack Web Architect**: Design and development of the premium React client and FastAPI server routing.
 * **Security & Forensics Specialist**: Authentication implementation, session history systems, and PDF cryptographic report generation.
 
+### GitHub Repository & Profiles
+* **GitHub Project Repository**: [github.com/your-username/Deepfake-Detector](https://github.com/your-username/Deepfake-Detector)
+* **Lead developer profile**: [@your-username](https://github.com/your-username)
+
 ---
 
 **FakeProof Labs** — Safeguarding digital integrity with Explainable AI.
