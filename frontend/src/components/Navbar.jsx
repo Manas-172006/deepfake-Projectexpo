@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react';
 import { FlaskConical, AlertTriangle, Menu, X, ArrowRight, Activity } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { useHealthCheck } from '../hooks/useHealthCheck';
+import ThemeToggle from './ThemeToggle';
+import UserMenu from './UserMenu';
 
 const Github = (props) => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
@@ -17,6 +20,7 @@ const STATUS_CFG = {
 };
 
 const Navbar = () => {
+  const navigate = useNavigate();
   const { status, details } = useHealthCheck(20000); // Poll health every 20 seconds
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -123,6 +127,9 @@ const Navbar = () => {
             {status === 'degraded' && <AlertTriangle className="w-3 h-3 text-yellow-400" />}
           </div>
 
+          {/* Theme Toggle */}
+          <ThemeToggle />
+
           {/* GitHub Icon */}
           <a
             href="https://github.com"
@@ -134,6 +141,9 @@ const Navbar = () => {
             <Github className="w-4 h-4" />
           </a>
 
+          {/* User Menu or Get Started Button */}
+          <UserMenu />
+          
           {/* Action Trigger */}
           <button
             onClick={() => handleNavClick('detector-workspace')}

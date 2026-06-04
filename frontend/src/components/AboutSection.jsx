@@ -18,10 +18,10 @@ const Linkedin = (props) => (
 
 const TEAM = [
   {
-    name: 'Team Expo Member 1',
-    role: 'ML Research Lead',
-    usn: '1XX22XX001',
-    github: 'https://github.com',
+    name: 'Manas Praveen Narule',
+    role: 'Team Lead · ML Engineer · Project Coordinator',
+    usn: '2112408027',
+    github: 'https://github.com/Manas-172006',
     linkedin: 'https://linkedin.com',
   },
   {
@@ -65,7 +65,7 @@ const AboutSection = () => {
           <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tight">
             About the <span className="gradient-text">Project</span>
           </h2>
-          <p className="text-[#8888bb] text-sm leading-relaxed">
+          <p className="text-[#b8b8ff] text-sm leading-relaxed">
             Unveiling the mission, importance, and team behind the development of FakeProof Labs.
           </p>
         </div>
@@ -172,13 +172,12 @@ const AboutSection = () => {
                   </div>
                 </div>
 
-                {/* Social badges links */}
                 <div className="flex items-center gap-2.5 mt-5 pt-4 border-t border-white/[0.05] w-full justify-center">
                   <a
                     href={member.github}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-7 h-7 rounded-lg hover:bg-white/5 border border-white/5 flex items-center justify-center text-[#8888bb] hover:text-white transition-colors"
+                    className="w-7 h-7 rounded-lg hover:bg-white/5 border border-white/5 flex items-center justify-center text-[#8888bb] hover:text-cyan-400 transition-colors hover:border-cyan-400/50"
                   >
                     <Github className="w-3.5 h-3.5" />
                   </a>
@@ -186,7 +185,7 @@ const AboutSection = () => {
                     href={member.linkedin}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-7 h-7 rounded-lg hover:bg-white/5 border border-white/5 flex items-center justify-center text-[#8888bb] hover:text-[#0077b5] transition-colors"
+                    className="w-7 h-7 rounded-lg hover:bg-white/5 border border-white/5 flex items-center justify-center text-[#8888bb] hover:text-[#0077b5] transition-colors hover:border-[#0077b5]/50"
                   >
                     <Linkedin className="w-3.5 h-3.5" />
                   </a>

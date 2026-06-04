@@ -110,7 +110,7 @@ const ModelArchitecture = () => {
               className="glass-card border-glow p-5 rounded-2xl text-center bg-white/[0.01]"
               style={{ boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)' }}
             >
-              <span className="text-[10px] font-mono text-purple-400 uppercase tracking-wider block mb-1">
+              <span className="text-forensic-xs text-purple-300 block mb-1">
                 {m.name}
               </span>
               <div className="text-3xl font-black text-white leading-none font-mono">
@@ -129,7 +129,7 @@ const ModelArchitecture = () => {
           {/* Left panel: Layers stack (7 cols) */}
           <div className="lg:col-span-7 glass-card border-glow p-6 rounded-2xl flex flex-col justify-between">
             <div className="space-y-2 mb-6">
-              <span className="text-[10px] font-mono text-cyan-400 font-bold uppercase tracking-wider">
+              <span className="text-forensic-xs text-cyan-300">
                 Sequential Feature Flow
               </span>
               <h3 className="text-white font-bold text-base">Interactive Neural Pipeline</h3>
@@ -164,7 +164,7 @@ const ModelArchitecture = () => {
                     </div>
 
                     <div className="flex items-center gap-4 text-right">
-                      <span className="text-[10px] font-mono text-[#5a5a8a] hidden sm:inline">{layer.type}</span>
+                      <span className="text-forensic-xs text-[#8888bb] hidden sm:inline">{layer.type}</span>
                       <span className="badge bg-white/5 border border-white/10 text-white font-mono text-[9px] py-0.5 px-2">
                         {layer.dims}
                       </span>
@@ -184,14 +184,14 @@ const ModelArchitecture = () => {
                     <Cpu className="w-4.5 h-4.5 text-cyan-400 animate-pulse" />
                   </div>
                   <div>
-                    <h3 className="text-white font-bold text-sm">Layer Inspector</h3>
-                    <p className="text-[#8888bb] text-[10px] font-mono">Tensor Dimensions & Function</p>
+                    <h3 className="text-forensic-sm">Layer Inspector</h3>
+                    <p className="text-forensic-xs mt-1">Tensor Dimensions & Function</p>
                   </div>
                 </div>
 
                 <div className="space-y-4">
                   <div>
-                    <span className="text-[10px] font-mono text-[#8888bb] uppercase tracking-wider block mb-1">
+                    <span className="text-forensic-xs block mb-1">
                       Layer Identifier
                     </span>
                     <p className="text-white font-black text-lg">{activeLayer.name}</p>
@@ -199,13 +199,13 @@ const ModelArchitecture = () => {
 
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <span className="text-[10px] font-mono text-[#8888bb] uppercase tracking-wider block mb-1">
+                      <span className="text-forensic-xs block mb-1">
                         Tensor Dimensions
                       </span>
                       <p className="text-cyan-400 font-bold font-mono text-sm">{activeLayer.dims}</p>
                     </div>
                     <div>
-                      <span className="text-[10px] font-mono text-[#8888bb] uppercase tracking-wider block mb-1">
+                      <span className="text-forensic-xs block mb-1">
                         Layer Type
                       </span>
                       <p className="text-purple-400 font-bold text-xs">{activeLayer.type}</p>
@@ -213,7 +213,7 @@ const ModelArchitecture = () => {
                   </div>
 
                   <div>
-                    <span className="text-[10px] font-mono text-[#8888bb] uppercase tracking-wider block mb-1">
+                    <span className="text-forensic-xs block mb-1">
                       Analytical Function
                     </span>
                     <p className="text-[#8888bb] text-xs leading-relaxed">

@@ -202,7 +202,7 @@ const AnalysisPanel = ({ onAnalysisComplete }) => {
           </div>
           <div>
             <h2 className="text-white font-bold text-base">Forensic Detector Workspace</h2>
-            <p className="text-[#8888bb] text-xs">Upload media and run deep learning authenticity filters</p>
+            <p className="text-[#b8b8ff] text-xs">Upload media and run deep learning authenticity filters</p>
           </div>
           <div className="ml-auto flex items-center gap-2">
             <span className="badge-cyan text-[10px] gap-1 font-mono">
@@ -239,11 +239,11 @@ const AnalysisPanel = ({ onAnalysisComplete }) => {
               {/* Status information */}
               <div className="text-center space-y-2 max-w-sm w-full">
                 <h4 className="text-white font-bold text-sm">Running Forensic Pipeline...</h4>
-                <p className="text-[#8888bb] font-mono text-[10px] uppercase tracking-wider">{loaderStatus}</p>
+                <p className="text-[#b8b8ff] font-mono text-[10px] uppercase tracking-wider">{loaderStatus}</p>
                 
                 {/* Progress bar and percentage */}
                 <div className="space-y-2 pt-2">
-                  <div className="flex justify-between items-center text-[10px] font-mono text-[#8888bb]">
+                  <div className="flex justify-between items-center text-[10px] font-mono text-[#b8b8ff]">
                     <span>Pipeline Progress</span>
                     <span className="font-bold text-white">{Math.round(progress)}%</span>
                   </div>
@@ -258,7 +258,7 @@ const AnalysisPanel = ({ onAnalysisComplete }) => {
 
               {/* Checklist details */}
               <div className="w-full max-w-md rounded-xl bg-white/[0.01] border border-white/[0.05] p-5 space-y-3 font-mono text-xs">
-                <p className="text-[#5a5a8a] text-[9px] tracking-widest uppercase mb-1">
+                <p className="text-[#8a8acc] text-[9px] tracking-widest uppercase mb-1">
                   ── Forensics Logs ──
                 </p>
                 {PIPELINE_STAGES.map((stage, idx) => {
@@ -269,7 +269,7 @@ const AnalysisPanel = ({ onAnalysisComplete }) => {
                     <div
                       key={stage.label}
                       className={`flex items-start gap-3 transition-colors duration-300 ${
-                        isDone ? 'text-neon-green' : isActive ? 'text-cyan-300' : 'text-[#5a5a8a]'
+                        isDone ? 'text-neon-green' : isActive ? 'text-cyan-300' : 'text-[#8a8acc]'
                       }`}
                     >
                       <span className="w-4 text-center shrink-0">
@@ -278,7 +278,7 @@ const AnalysisPanel = ({ onAnalysisComplete }) => {
                       <div className="flex-1">
                         <span className="font-bold">{stage.label}</span>
                         {isActive && (
-                          <p className="text-[10px] text-[#8888bb] mt-0.5 leading-normal">
+                          <p className="text-[10px] text-[#b8b8ff] mt-0.5 leading-normal">
                             {stage.details}
                           </p>
                         )}
@@ -361,10 +361,10 @@ const AnalysisPanel = ({ onAnalysisComplete }) => {
         {/* STAGE 4: History / Archive list (renders at the bottom of panel) */}
         {history.length > 0 && !isLoading && (
           <div className="mt-12 pt-8 border-t border-white/[0.06] space-y-4">
-            <div className="flex items-center gap-2 text-[#b0b0d0]">
+            <div className="flex items-center gap-2 text-[#d0d0ff]">
               <FolderArchive className="w-4.5 h-4.5 text-cyan-400" />
               <h3 className="text-white font-bold text-sm">Scan Registry History</h3>
-              <span className="text-[10px] font-mono text-[#5a5a8a]">({history.length} archived scans)</span>
+              <span className="text-[10px] font-mono text-[#8a8acc]">({history.length} archived scans)</span>
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
@@ -387,10 +387,10 @@ const AnalysisPanel = ({ onAnalysisComplete }) => {
                       <span className={isFakeItem ? 'text-neon-red font-bold' : 'text-neon-green font-bold'}>
                         {item.verdict.toUpperCase()}
                       </span>
-                      <span className="text-[#5a5a8a]">{item.timestamp}</span>
+                      <span className="text-[#8a8acc]">{item.timestamp}</span>
                     </div>
 
-                    <div className="text-[9px] text-[#8888bb] font-mono truncate">
+                    <div className="text-[9px] text-[#b8b8ff] font-mono truncate">
                       Conf: {item.confidence}%
                     </div>
                   </div>

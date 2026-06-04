@@ -38,7 +38,7 @@ const ImagePanel = ({ label, sublabel, src, isActive, onClick, icon: Icon, accen
                 }`}
   >
     {/* Image */}
-    <div className="relative aspect-square bg-[#0f0f1a] overflow-hidden">
+    <div className="relative aspect-[4/3] bg-[#0f0f1a] overflow-hidden">
       {src ? (
         <img
           src={`data:image/png;base64,${src}`}
@@ -92,7 +92,7 @@ const ImagePanel = ({ label, sublabel, src, isActive, onClick, icon: Icon, accen
         <Icon className={`w-3.5 h-3.5 shrink-0 ${accentClass}`} />
         <p className="text-white text-xs font-semibold truncate">{label}</p>
       </div>
-      <p className="text-[#5a5a8a] text-[10px] font-mono mt-0.5 truncate">{sublabel}</p>
+      <p className="text-forensic-xs mt-1 truncate">{sublabel}</p>
     </div>
   </motion.div>
 );
@@ -185,8 +185,8 @@ const GradCAMViewer = ({ result }) => {
               <Layers className="w-4 h-4 text-cyber-400" />
             </div>
             <div>
-              <p className="text-white font-bold text-sm">Neural Explainability</p>
-              <p className="text-[#8888bb] text-[10px] font-mono">Grad-CAM · Class Activation Mapping</p>
+              <p className="text-forensic-sm">Neural Explainability</p>
+              <p className="text-forensic-xs mt-1">Grad-CAM · Class Activation Mapping</p>
             </div>
           </div>
 
@@ -200,7 +200,7 @@ const GradCAMViewer = ({ result }) => {
             >
               <div className="flex items-center gap-1.5 justify-end mb-0.5">
                 <Activity className="w-3.5 h-3.5 text-cyber-400" />
-                <span className="text-[#8888bb] text-[10px] font-mono uppercase tracking-wider">
+                <span className="text-forensic-xs">
                   AI Attention Score
                 </span>
               </div>
@@ -236,7 +236,7 @@ const GradCAMViewer = ({ result }) => {
               {/* Score bar */}
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between text-xs">
-                  <span className="text-[#8888bb] font-mono">Attention Intensity</span>
+                  <span className="text-forensic-xs">Attention Intensity</span>
                   <span className={`font-bold font-mono ${attn.color}`}>{gradcam_score}%</span>
                 </div>
                 <div className="h-1.5 rounded-full bg-white/10 overflow-hidden">
