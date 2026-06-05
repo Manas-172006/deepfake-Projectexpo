@@ -8,3 +8,5 @@ pillow==12.2.0
 numpy==2.4.5
 # Gemini AI — modern SDK (replaces deprecated google-generativeai)
 google-genai==1.16.0
+gunicorn==22.0.0
+

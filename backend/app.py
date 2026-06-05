@@ -82,13 +82,24 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+# ── CORS Setup ────────────────────────────────────────────────────────────────
+allowed_origins = list(settings.ALLOWED_ORIGINS)
+if settings.PRODUCTION_FRONTEND_URLS:
+    extra_origins = [
+        origin.strip()
+        for origin in settings.PRODUCTION_FRONTEND_URLS.split(",")
+        if origin.strip()
+    ]
+    allowed_origins.extend(extra_origins)
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.ALLOWED_ORIGINS,
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 
 app.include_router(prediction_router)
 
@@ -101,6 +112,15 @@ async def root():
         "status":  "running",
         "docs":    "/docs",
     }
+
+
+@app.get("/health")
+async def health():
+    return {
+        "status": "healthy",
+        "model_loaded": model_service.is_loaded
+    }
+
 
 
 # ── Helpers ───────────────────────────────────────────────────────────────────

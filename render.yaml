@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: fakeproof-backend
+    env: python
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn -w 1 -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:$PORT app:app
+    envVars:
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GEMINI_ENABLED
+        value: "True"
+      - key: INVERT_LABELS
+        value: "False"
+      - key: CONFIDENCE_THRESHOLD
+        value: "0.7"
+      - key: PRODUCTION_FRONTEND_URLS
+        sync: false

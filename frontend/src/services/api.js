@@ -42,7 +42,7 @@ export const predictImage = async (imageFile) => {
     if (err.request) {
       return {
         success: false,
-        error: 'Cannot reach the server. Make sure the backend is running on port 8000.',
+        error: 'Cannot reach the server. If this is the first request in a while, the backend server may be waking up from sleep mode (Render free tier). This can take up to 60 seconds. Please try again.',
       };
     }
     return { success: false, error: 'An unexpected error occurred.' };

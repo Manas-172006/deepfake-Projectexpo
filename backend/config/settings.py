@@ -6,6 +6,7 @@ Centralized configuration management for scalability
 from pydantic_settings import BaseSettings
 from pathlib import Path
 from typing import Optional
+import tempfile
 
 from .constants import CONFIDENCE_THRESHOLD as CONST_CONFIDENCE_THRESHOLD
 from .constants import IMAGE_SIZE as CONST_IMAGE_SIZE
@@ -23,6 +24,8 @@ class Settings(BaseSettings):
         "http://127.0.0.1:5173",
         "http://127.0.0.1:3000",
     ]
+    # Comma-separated additional frontend URLs for production CORS
+    PRODUCTION_FRONTEND_URLS: Optional[str] = None
 
     # Model Configuration
     MODEL_PATH: Path = Path(__file__).parent.parent.parent / "models" / "best_model.h5"
@@ -30,7 +33,7 @@ class Settings(BaseSettings):
     IMAGE_SIZE: tuple[int, int] = CONST_IMAGE_SIZE
 
     # Upload Configuration
-    UPLOAD_DIR: Path = Path(__file__).parent.parent / "uploads"
+    UPLOAD_DIR: Path = Path(tempfile.gettempdir()) / "fakeproof_uploads"
     MAX_UPLOAD_SIZE: int = 10 * 1024 * 1024  # 10 MB
     # Allow webp to match frontend accepted types
     ALLOWED_EXTENSIONS: set[str] = {".jpg", ".jpeg", ".png", ".webp"}
@@ -59,4 +62,4 @@ class Settings(BaseSettings):
 settings = Settings()
 
 # Create upload directory if it doesn't exist
-settings.UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+settings.UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
