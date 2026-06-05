@@ -54,6 +54,10 @@ def verify(image_path_str: str):
     # 4. Grad-CAM Computation
     logger.info("Computing Grad-CAM gradients...")
     target_class = 1 if pred_res['prediction'] == "Real" else 0
+    
+    last_conv_layer = gradcam_service._find_last_conv_layer(model_service._model)
+    selected_layer_name = last_conv_layer.name if last_conv_layer else "None"
+    
     heatmap = gradcam_service.generate(
         model_service._model,
         preprocessed,
@@ -64,6 +68,21 @@ def verify(image_path_str: str):
     if heatmap is None:
         logger.error("Grad-CAM generation returned None.")
         sys.exit(1)
+
+    # Calculate statistics
+    heatmap_min = float(heatmap.min())
+    heatmap_max = float(heatmap.max())
+    heatmap_mean = float(heatmap.mean())
+    heatmap_std = float(heatmap.std())
+
+    print("\n" + "="*40)
+    print("Grad-CAM Activation Audit Statistics:")
+    print(f"  Selected Convolution Layer : {selected_layer_name}")
+    print(f"  Heatmap Min Value          : {heatmap_min:.6f}")
+    print(f"  Heatmap Max Value          : {heatmap_max:.6f}")
+    print(f"  Heatmap Mean Value         : {heatmap_mean:.6f}")
+    print(f"  Heatmap Std Deviation      : {heatmap_std:.6f}")
+    print("="*40 + "\n")
 
     gradcam_score = gradcam_service.compute_attention_score(heatmap)
     logger.info(f"Grad-CAM Attention Score: {gradcam_score}/100")
@@ -82,13 +101,13 @@ def verify(image_path_str: str):
 
     with open(debug_dir / "original.png", "wb") as f:
         f.write(base64.b64decode(original_b64))
-    with open(debug_dir / "heatmap.png", "wb") as f:
+    with open(debug_dir / "raw_heatmap.png", "wb") as f:
         f.write(base64.b64decode(heatmap_b64))
     with open(debug_dir / "overlay.png", "wb") as f:
         f.write(base64.b64decode(overlay_b64))
 
     logger.info("Saved original.png")
-    logger.info("Saved heatmap.png")
+    logger.info("Saved raw_heatmap.png")
     logger.info("Saved overlay.png")
     logger.info("Grad-CAM verification completed successfully.")
 

@@ -29,7 +29,7 @@ const Footer = () => {
 
   return (
     <footer className="border-t border-white/[0.06] bg-[#03030d] pt-16 pb-8 px-6 relative z-10">
-      <div className="max-w-6xl mx-auto w-full grid grid-cols-2 md:grid-cols-12 gap-8 text-xs text-[#8888bb] pb-12 border-b border-white/[0.04]">
+      <div className="max-w-6xl mx-auto w-full grid grid-cols-2 md:grid-cols-12 gap-8 text-xs text-[#b8b8ff] pb-12 border-b border-white/[0.04]">
         
         {/* Column 1: Platform Summary (4 cols) */}
         <div className="col-span-2 md:col-span-4 space-y-4">
@@ -41,7 +41,7 @@ const Footer = () => {
               FakeProof<span className="gradient-text"> Labs</span>
             </span>
           </div>
-          <p className="leading-relaxed text-[#8888bb] max-w-sm">
+          <p className="leading-relaxed text-[#b8b8ff] max-w-sm">
             An advanced digital forensics and media verification platform engineered for news agencies, media verification agencies, and cybersecurity analysts. 
             Utilizes custom deep learning models and Grad-CAM class mapping for explainable AI outputs.
           </p>
@@ -88,32 +88,30 @@ const Footer = () => {
         {/* Column 4: Project Expo Team (4 cols) */}
         <div className="col-span-2 md:col-span-4 space-y-4">
           <h4 className="text-white font-bold text-xs uppercase tracking-wider font-mono">
-            Project Expo Info
+            Project Team Lead
           </h4>
           <ul className="space-y-2">
             <li>
-              <span className="text-white font-semibold">Team Members:</span>
-              <p className="text-[11px] font-mono mt-0.5 leading-snug">
-                Member 1 (1XX22XX001) · Member 2 (1XX22XX002) <br />
-                Member 3 (1XX22XX003) · Member 4 (1XX22XX004)
-              </p>
+              <span className="text-white font-semibold">Lead Developer:</span>
+              <p className="text-[11px] font-mono mt-0.5">Manas Praveen Narule</p>
             </li>
             <li>
-              <div className="flex items-center gap-1.5 text-white font-semibold">
-                <GraduationCap className="w-4 h-4 text-purple-400 shrink-0" />
-                Faculty Guide:
-              </div>
-              <p className="text-[#8888bb] mt-0.5 font-medium">Prof. Guide Name, Asst. Professor, Dept. of CSE</p>
+              <span className="text-white font-semibold">USN:</span>
+              <p className="text-[11px] font-mono mt-0.5">2112408027</p>
             </li>
-            <li className="pt-1">
+            <li>
+              <span className="text-white font-semibold">Role:</span>
+              <p className="text-[11px] font-mono mt-0.5">Team Lead · ML Engineer</p>
+            </li>
+            <li className="pt-2">
               <a
-                href="https://github.com"
+                href="https://github.com/Manas-172006"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 hover:text-white transition-all font-mono text-[10px] bg-white/5 border border-white/10 px-2.5 py-1 rounded-lg"
+                className="inline-flex items-center gap-1.5 hover:text-cyan-400 transition-all font-mono text-[10px] bg-white/5 border border-white/10 px-2.5 py-1.5 rounded-lg hover:border-cyan-400/50"
               >
                 <Github className="w-3.5 h-3.5 text-cyan-400" />
-                github.com/project-repository
+                GitHub Profile
               </a>
             </li>
           </ul>
@@ -122,7 +120,7 @@ const Footer = () => {
       </div>
 
       {/* Bottom bar */}
-      <div className="max-w-6xl mx-auto w-full pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-[10px] text-[#5a5a8a] font-mono">
+      <div className="max-w-6xl mx-auto w-full pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-[10px] text-[#8a8acc] font-mono">
         <span>
           © {new Date().getFullYear()} FakeProof Labs | AI-Powered Deepfake Detection Platform
         </span>

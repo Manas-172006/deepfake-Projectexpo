@@ -199,3 +199,69 @@ Perform these validation checks on Expo day before demonstration:
 - [ ] **Grad-CAM Rendering**: Check that the dashboard renders three distinct columns: Original, Heatmap, and Overlay.
 - [ ] **PDF Export**: Click "Download PDF Report" and verify the generated PDF contains the classification details, layout, and images.
 - [ ] **Navbar Status**: Confirm the Navbar header shows a green **🟢 System Active** badge.
+
+---
+
+## SCREENSHOTS
+
+Here is a visual overview of the FakeProof Labs Forensic Platform:
+
+| **Login & Identity Portal** | **Authenticity Detection Workspace** |
+|:---:|:---:|
+| ![Login Interface](assets/login_page.png) | ![Workspace Dashboard](assets/detection_dashboard.png) |
+
+| **Grad-CAM Attention Overlay** | **Forensic Export Report** |
+|:---:|:---:|
+| ![Grad-CAM Visualization](assets/gradcam_viewer.png) | ![Forensic PDF Report](assets/pdf_report.png) |
+
+*(Note: Replace image links in `assets/` with actual system screenshots prior to final deployment).*
+
+---
+
+## DEPLOYMENT GUIDE
+
+FakeProof Labs is designed to be easily deployed on modern cloud platforms.
+
+### Backend Deployment (Render)
+
+1. Create a new **Web Service** on [Render](https://render.com/).
+2. Connect your GitHub repository.
+3. Configure the following service settings:
+   - **Environment**: `Python`
+   - **Build Command**: `pip install -r requirements.txt`
+   - **Start Command**: `uvicorn app:app --host 0.0.0.0 --port $PORT`
+4. In the **Environment** tab, configure variables:
+   - `GEMINI_API_KEY`: `your-gemini-api-key`
+   - `GEMINI_ENABLED`: `True`
+   - `GEMINI_MODEL`: `gemini-1.5-flash`
+   - `INVERT_LABELS`: `False`
+   - `CONFIDENCE_THRESHOLD`: `0.7`
+
+### Frontend Deployment (Vercel)
+
+1. Create a new project on [Vercel](https://vercel.com/).
+2. Select your GitHub repository.
+3. Configure project settings:
+   - **Framework Preset**: `Vite`
+   - **Root Directory**: `frontend`
+   - **Build Command**: `npm run build`
+   - **Output Directory**: `dist`
+4. Set the **Environment Variables**:
+   - `VITE_API_URL`: Set to your deployed Render backend URL (e.g. `https://deepfake-detector-backend.onrender.com`).
+5. Click **Deploy**.
+
+---
+
+## TEAM INFORMATION
+
+* **Lead AI Researcher & ML Engineer**: Development of classification models, preprocessors, and Grad-CAM attention algorithms.
+* **Full-Stack Web Architect**: Design and development of the premium React client and FastAPI server routing.
+* **Security & Forensics Specialist**: Authentication implementation, session history systems, and PDF cryptographic report generation.
+
+### GitHub Repository & Profiles
+* **GitHub Project Repository**: [github.com/your-username/Deepfake-Detector](https://github.com/your-username/Deepfake-Detector)
+* **Lead developer profile**: [@your-username](https://github.com/your-username)
+
+---
+
+**FakeProof Labs** — Safeguarding digital integrity with Explainable AI.

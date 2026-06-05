@@ -8,6 +8,7 @@ import { ShieldCheck, ShieldAlert, BarChart3, Info, TrendingUp } from 'lucide-re
 import { useEffect, useState } from 'react';
 import AIAnalysisCard from './AIAnalysisCard';
 import GradCAMViewer  from './GradCAMViewer';
+import { AnalysisHistoryService } from '../services/AnalysisHistoryService';
 
 /* ── helpers ── */
 const getConfig = (prediction, confidence) => {
@@ -65,6 +66,22 @@ const ResultDisplay = ({ result }) => {
     original_image,
   } = result;
 
+  // Save analysis to history when component mounts
+  useEffect(() => {
+    if (result && prediction && confidence !== undefined) {
+      const analysisRecord = {
+        prediction,
+        confidence: Math.round(confidence),
+        processingTime: processing_time,
+        summary: ai_analysis?.summary || 'Analysis completed successfully.',
+        image: heatmap_image || overlay_image || original_image,
+      };
+
+      // Save to localStorage history
+      AnalysisHistoryService.addAnalysis(analysisRecord);
+    }
+  }, [result, prediction, confidence, processing_time, ai_analysis, heatmap_image, overlay_image, original_image]);
+
   const cfg = getConfig(prediction, confidence);
   const { Icon } = cfg;
 
@@ -100,7 +117,7 @@ const ResultDisplay = ({ result }) => {
           </motion.div>
 
           <div className="flex-1 min-w-0">
-            <p className="text-[#8888bb] text-xs font-mono uppercase tracking-widest mb-1">
+            <p className="text-forensic-xs mb-1">
               FakeProof Labs · AI Verdict
             </p>
             <motion.h2
@@ -111,7 +128,7 @@ const ResultDisplay = ({ result }) => {
             >
               {cfg.label}
             </motion.h2>
-            <p className="text-[#8888bb] text-sm mt-1">{cfg.sublabel}</p>
+            <p className="text-[#b8b8ff] text-sm mt-1">{cfg.sublabel}</p>
           </div>
 
           <motion.div
@@ -124,7 +141,7 @@ const ResultDisplay = ({ result }) => {
               <AnimatedNumber target={confidence} />
               <span className="text-2xl">%</span>
             </div>
-            <p className="text-[#8888bb] text-xs mt-1">confidence</p>
+            <p className="text-[#b8b8ff] text-xs mt-1">confidence</p>
           </motion.div>
         </div>
       </div>
@@ -144,7 +161,7 @@ const ResultDisplay = ({ result }) => {
       {/* ── Confidence meter ── */}
       <div className="glass-card p-5 space-y-3">
         <div className="flex items-center justify-between text-sm">
-          <div className="flex items-center gap-2 text-[#b0b0d0] font-medium">
+          <div className="flex items-center gap-2 text-forensic-xs">
             <BarChart3 className="w-4 h-4 text-cyber-400" />
             Confidence Score
           </div>
@@ -160,7 +177,7 @@ const ResultDisplay = ({ result }) => {
           />
         </div>
 
-        <div className="flex justify-between text-xs text-[#5a5a8a] font-mono">
+        <div className="flex justify-between text-xs text-[#8a8acc] font-mono">
           <span>0%</span>
           <span>50%</span>
           <span>100%</span>
@@ -169,7 +186,7 @@ const ResultDisplay = ({ result }) => {
 
       {/* ── Analysis breakdown ── */}
       <div className="glass-card p-5">
-        <div className="flex items-center gap-2 text-[#b0b0d0] font-medium text-sm mb-4">
+        <div className="flex items-center gap-2 text-forensic-sm mb-4">
           <TrendingUp className="w-4 h-4 text-cyber-400" />
           Analysis Breakdown
         </div>
@@ -182,7 +199,7 @@ const ResultDisplay = ({ result }) => {
             { label: 'Inference',      value: processing_time ? `${processing_time} ms` : '—', mono: true },
           ].map(({ label, value, mono }) => (
             <div key={label} className="bg-white/5 rounded-xl p-3 text-center border border-white/[0.08]">
-              <p className="text-[#5a5a8a] text-xs uppercase tracking-wider mb-1">{label}</p>
+              <p className="text-forensic-xs mb-1">{label}</p>
               <p className={`text-white font-bold text-sm ${mono ? 'font-mono' : ''}`}>{value}</p>
             </div>
           ))}
@@ -192,11 +209,11 @@ const ResultDisplay = ({ result }) => {
         {gradcam_score !== null && gradcam_score !== undefined && (
           <div className="mt-3 grid grid-cols-2 gap-3">
             <div className="bg-white/5 rounded-xl p-3 text-center border border-white/[0.08]">
-              <p className="text-[#5a5a8a] text-xs uppercase tracking-wider mb-1">Attention Score</p>
+              <p className="text-forensic-xs mb-1">Attention Score</p>
               <p className="text-neon-cyan font-bold text-sm font-mono">{gradcam_score}/100</p>
             </div>
             <div className="bg-white/5 rounded-xl p-3 text-center border border-white/[0.08]">
-              <p className="text-[#5a5a8a] text-xs uppercase tracking-wider mb-1">XAI Method</p>
+              <p className="text-forensic-xs mb-1">XAI Method</p>
               <p className="text-cyber-300 font-bold text-sm">Grad-CAM</p>
             </div>
           </div>
@@ -205,7 +222,7 @@ const ResultDisplay = ({ result }) => {
 
       {/* ── Disclaimer ── */}
       <div className="flex items-start gap-2.5 px-4 py-3 rounded-xl
-                      bg-white/[0.03] border border-white/[0.08] text-[#5a5a8a] text-xs">
+                      bg-white/[0.03] border border-white/[0.08] text-[#8a8acc] text-xs">
         <Info className="w-3.5 h-3.5 shrink-0 mt-0.5 text-cyber-500/60" />
         <span>
           Results are generated by FakeProof Labs AI systems. Use as a reference only —

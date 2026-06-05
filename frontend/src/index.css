@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&family=Courier+Prime:wght@400;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -188,6 +188,36 @@
   .badge-purple {
     @apply badge bg-neon-purple/10 text-cyber-200 border border-neon-purple/20;
   }
+
+  /* ─── Forensic Typography ─── */
+  /* Terminal/pixel-style fonts for diagnostic & metadata labels */
+  .font-forensic {
+    font-family: 'Courier Prime', 'JetBrains Mono', monospace;
+    letter-spacing: 0.05em;
+    font-weight: 700;
+  }
+
+  .text-forensic-xs {
+    @apply font-forensic text-[10px] uppercase tracking-widest text-[#d8d8ff];
+  }
+
+  .text-forensic-sm {
+    @apply font-forensic text-xs uppercase tracking-wider text-white;
+  }
+
+  .text-forensic-md {
+    @apply font-forensic text-sm uppercase tracking-wider text-white;
+  }
+
+  .text-forensic-label {
+    @apply font-forensic text-[11px] uppercase tracking-widest text-[#b8b8ff];
+    text-shadow: 0 0 10px rgba(0, 212, 255, 0.2);
+  }
+
+  .text-forensic-accent {
+    @apply font-forensic text-xs uppercase tracking-widest text-neon-cyan;
+    text-shadow: 0 0 8px rgba(0, 212, 255, 0.3);
+  }
 }
 
 /* ─── Animations & Utilities ────────────────────────────────── */
@@ -225,3 +255,255 @@
   0% { background-position: 0 0, 0 0; }
   100% { background-position: 0 100%, 0 0; }
 }
+
+/* ─── Dark/Light Theme System ────────────────────────────────── */
+:root {
+  /* Dark Mode (Default) - IMPROVED WCAG CONTRAST */
+  --bg-primary: #03030d;
+  --bg-secondary: #0a0a15;
+  --bg-tertiary: #141428;
+  --text-primary: #ffffff;
+  --text-secondary: #b8b8ff;
+  --text-tertiary: #8a8acc;
+  --border-color: rgba(255, 255, 255, 0.1);
+  --border-color-hover: rgba(255, 255, 255, 0.15);
+  --glass-bg: rgba(20, 20, 40, 0.6);
+  --glass-border: rgba(255, 255, 255, 0.04);
+  --shadow-color: rgba(0, 0, 0, 0.5);
+  
+  --transition-speed: 300ms;
+}
+
+/* Light Theme - IMPROVED WCAG CONTRAST */
+html.light-theme {
+  --bg-primary: #f8f9fa;
+  --bg-secondary: #ffffff;
+  --bg-tertiary: #f1f3f5;
+  --text-primary: #1a1a2e;
+  --text-secondary: #2a2a4a;
+  --text-tertiary: #4a4a7a;
+  --border-color: rgba(0, 0, 0, 0.1);
+  --border-color-hover: rgba(0, 0, 0, 0.15);
+  --glass-bg: rgba(255, 255, 255, 0.8);
+  --glass-border: rgba(0, 0, 0, 0.05);
+  --shadow-color: rgba(0, 0, 0, 0.1);
+  
+  --transition-speed: 300ms;
+}
+
+/* Apply theme to all elements */
+html {
+  color-scheme: dark;
+}
+
+html.light-theme {
+  color-scheme: light;
+}
+
+body {
+  transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+/* Light theme background gradient */
+html.light-theme body {
+  background-color: var(--bg-primary);
+  background-image: 
+    radial-gradient(circle at 50% -20%, rgba(124, 58, 237, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 0% 100%, rgba(0, 212, 255, 0.03) 0%, transparent 40%),
+    radial-gradient(circle at 100% 100%, rgba(124, 58, 237, 0.02) 0%, transparent 45%);
+  background-attachment: fixed;
+}
+
+/* Update scrollbar for light mode */
+html.light-theme ::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+
+html.light-theme ::-webkit-scrollbar-thumb {
+  background: var(--bg-tertiary);
+  border-color: var(--bg-primary);
+}
+
+html.light-theme ::-webkit-scrollbar-thumb:hover {
+  background: var(--border-color);
+}
+
+/* Selection color for light mode */
+html.light-theme ::selection {
+  background: rgba(124, 58, 237, 0.2);
+  color: var(--text-primary);
+}
+
+/* All text elements transition */
+* {
+  transition: background-color var(--transition-speed) ease, 
+              color var(--transition-speed) ease,
+              border-color var(--transition-speed) ease;
+}
+
+/* Disable transition on immediate theme load */
+html.no-transition,
+html.no-transition *,
+html.no-transition *::before,
+html.no-transition *::after {
+  transition: none !important;
+}
+
+/* Light mode glass cards */
+html.light-theme .glass-card {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.7) 0%, rgba(248, 249, 250, 0.9) 100%);
+  border-color: rgba(0, 0, 0, 0.05);
+}
+
+html.light-theme .glass-card:hover {
+  border-color: rgba(0, 0, 0, 0.1);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+}
+
+/* Light mode nav */
+html.light-theme header {
+  background: rgba(248, 249, 250, 0.8) !important;
+  border-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+html.light-theme header.scrolled {
+  background: rgba(248, 249, 250, 0.9) !important;
+}
+
+/* Light mode buttons */
+html.light-theme .btn-cyber {
+  background: linear-gradient(to right, #7c3aed, #7c3aed);
+  color: white;
+}
+
+html.light-theme .btn-ghost {
+  background: rgba(0, 0, 0, 0.02);
+  border-color: rgba(0, 0, 0, 0.1);
+  color: var(--text-primary);
+}
+
+html.light-theme .btn-ghost:hover {
+  background: rgba(124, 58, 237, 0.05);
+  border-color: rgba(124, 58, 237, 0.3);
+  color: #7c3aed;
+}
+
+/* Light mode input fields */
+html.light-theme input,
+html.light-theme textarea,
+html.light-theme select {
+  background: rgba(255, 255, 255, 0.6);
+  border-color: rgba(0, 0, 0, 0.1);
+  color: var(--text-primary);
+}
+
+html.light-theme input:focus,
+html.light-theme textarea:focus,
+html.light-theme select:focus {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: #7c3aed;
+  box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.1);
+}
+
+/* Light mode placeholder */
+html.light-theme input::placeholder,
+html.light-theme textarea::placeholder {
+  color: rgba(0, 0, 0, 0.4);
+}
+
+/* Light mode status dot */
+html.light-theme .status-dot.online {
+  box-shadow: 0 0 10px rgba(0, 255, 136, 0.5), 0 0 20px rgba(0, 255, 136, 0.2);
+}
+
+html.light-theme .status-dot.offline {
+  box-shadow: 0 0 10px rgba(255, 51, 102, 0.5), 0 0 20px rgba(255, 51, 102, 0.2);
+}
+
+html.light-theme .status-dot.degraded {
+  box-shadow: 0 0 10px rgba(250, 204, 21, 0.5), 0 0 20px rgba(250, 204, 21, 0.2);
+}
+
+/* Light mode badges */
+html.light-theme .badge-cyan {
+  background: rgba(124, 58, 237, 0.1);
+  border-color: rgba(124, 58, 237, 0.2);
+  color: #7c3aed;
+}
+
+html.light-theme .badge-green {
+  background: rgba(0, 255, 136, 0.1);
+  border-color: rgba(0, 255, 136, 0.2);
+  color: #00ff88;
+}
+
+html.light-theme .badge-red {
+  background: rgba(255, 51, 102, 0.1);
+  border-color: rgba(255, 51, 102, 0.2);
+  color: #ff3366;
+}
+
+/* Light mode progress bar */
+html.light-theme .progress-bar {
+  background: rgba(0, 0, 0, 0.06);
+  border-color: rgba(0, 0, 0, 0.1);
+}
+
+/* Light mode text colors */
+html.light-theme .text-neon-cyan {
+  color: #0066cc;
+  text-shadow: 0 0 15px rgba(0, 102, 204, 0.1);
+}
+
+html.light-theme .text-neon-green {
+  color: #00a65e;
+  text-shadow: 0 0 15px rgba(0, 166, 94, 0.1);
+}
+
+html.light-theme .text-neon-red {
+  color: #d84860;
+  text-shadow: 0 0 15px rgba(216, 72, 96, 0.1);
+}
+
+html.light-theme .gradient-text {
+  background: linear-gradient(to right, #7c3aed, #6c2fd4);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Light mode specific component overrides */
+html.light-theme .text-\[\#8888bb\] {
+  color: var(--text-secondary);
+}
+
+html.light-theme .text-\[\#5a5a8a\] {
+  color: var(--text-tertiary);
+}
+
+html.light-theme .text-\[\#03030d\] {
+  color: var(--text-primary);
+}
+
+html.light-theme .bg-\[\#03030d\] {
+  background-color: var(--bg-primary);
+}
+
+html.light-theme .bg-white\/5 {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+html.light-theme .border-white\/10 {
+  border-color: rgba(0, 0, 0, 0.1);
+}
+
+html.light-theme .border-white\/20 {
+  border-color: rgba(0, 0, 0, 0.2);
+}
+
+html.light-theme .hover\:bg-white\/5:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+

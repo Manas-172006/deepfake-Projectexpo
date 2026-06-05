@@ -9,8 +9,9 @@ const NeuralNetworkBackground = () => {
     const handleScroll = () => {
       const scrollY = window.scrollY;
       const height = window.innerHeight || 800;
-      // Gradually decrease background opacity as scroll increases, floor at 0.08
-      const newOpacity = Math.max(0.08, 0.35 - (scrollY / height) * 0.25);
+      // Maintain higher baseline opacity with subtle scroll fade
+      // Visible throughout all sections, floor at 0.12 for continuous presence
+      const newOpacity = Math.max(0.12, 0.50 - (scrollY / height) * 0.20);
       setOpacity(newOpacity);
     };
 
@@ -73,16 +74,16 @@ const NeuralNetworkBackground = () => {
       draw() {
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-        ctx.fillStyle = this.baseColor + '0.22)';
+        ctx.fillStyle = this.baseColor + '0.35)';  // increased from 0.22 for more visibility
         ctx.fill();
       }
     }
 
     const initParticles = () => {
-      const particleDensity = 0.000045; // particles per pixel area
+      const particleDensity = 0.000055; // slightly increased particle density for better visibility
       const count = Math.min(
         Math.floor(canvas.width * canvas.height * particleDensity),
-        95
+        120  // increased from 95 to 120 for more prominent network
       );
       particles = [];
       for (let i = 0; i < count; i++) {
@@ -102,7 +103,7 @@ const NeuralNetworkBackground = () => {
           const distance = Math.sqrt(dx * dx + dy * dy);
 
           if (distance < maxDistance) {
-            const alpha = (1 - distance / maxDistance) * 0.08;
+            const alpha = (1 - distance / maxDistance) * 0.15;  // increased from 0.08
             ctx.beginPath();
             ctx.moveTo(p1.x, p1.y);
             ctx.lineTo(p2.x, p2.y);
@@ -125,7 +126,7 @@ const NeuralNetworkBackground = () => {
           const distance = Math.sqrt(dx * dx + dy * dy);
 
           if (distance < mouseRef.current.radius) {
-            const alpha = (1 - distance / mouseRef.current.radius) * 0.1;
+            const alpha = (1 - distance / mouseRef.current.radius) * 0.18;  // increased from 0.1
             ctx.beginPath();
             ctx.moveTo(p.x, p.y);
             ctx.lineTo(mouseRef.current.x, mouseRef.current.y);

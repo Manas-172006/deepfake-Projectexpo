@@ -106,8 +106,8 @@ const HowItWorks = () => {
                     <div className={`w-12 h-12 rounded-xl ${s.bg} border ${s.border} flex items-center justify-center`}>
                       <Icon className={`w-6 h-6 ${s.color}`} />
                     </div>
-                    <span className="font-mono text-2xl font-black opacity-10 text-white group-hover:opacity-30 transition-opacity duration-300">
-                      {s.step}
+                    <span className="text-forensic-xs opacity-60 group-hover:opacity-100 transition-opacity duration-300">
+                      STEP {s.step}
                     </span>
                   </div>
 
