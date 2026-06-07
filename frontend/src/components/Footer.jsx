@@ -97,11 +97,11 @@ const Footer = () => {
             </li>
             <li>
               <span className="text-white font-semibold">USN:</span>
-              <p className="text-[11px] font-mono mt-0.5">2112408027</p>
+              <p className="text-[11px] font-mono mt-0.5">21124088027</p>
             </li>
             <li>
               <span className="text-white font-semibold">Role:</span>
-              <p className="text-[11px] font-mono mt-0.5">Team Lead · ML Engineer</p>
+              <p className="text-[11px] font-mono mt-0.5">TEAM LEAD • ML ENGINEER • PROJECT COORDINATOR</p>
             </li>
             <li className="pt-2">
               <a

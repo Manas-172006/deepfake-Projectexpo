@@ -19,31 +19,31 @@ const Linkedin = (props) => (
 const TEAM = [
   {
     name: 'Manas Praveen Narule',
-    role: 'Team Lead · ML Engineer · Project Coordinator',
-    usn: '2112408027',
+    role: 'TEAM LEAD • ML ENGINEER • PROJECT COORDINATOR',
+    usn: '21124088027',
     github: 'https://github.com/Manas-172006',
-    linkedin: 'https://linkedin.com',
+    linkedin: '',
   },
   {
-    name: 'Team Expo Member 2',
-    role: 'Frontend & UI Engineer',
-    usn: '1XX22XX002',
-    github: 'https://github.com',
-    linkedin: 'https://linkedin.com',
+    name: 'Viswajith Reddy Panduga',
+    department: 'CSE (AI & ML)',
+    usn: '2102508615',
+    github: '',
+    linkedin: '',
   },
   {
-    name: 'Team Expo Member 3',
-    role: 'Backend & APIs Architect',
-    usn: '1XX22XX003',
-    github: 'https://github.com',
-    linkedin: 'https://linkedin.com',
+    name: 'Sankar Narayana Reddy V',
+    department: 'CSE (AI & ML)',
+    usn: '2082508387',
+    github: '',
+    linkedin: '',
   },
   {
-    name: 'Team Expo Member 4',
-    role: 'Forensics Data Engineer',
-    usn: '1XX22XX004',
-    github: 'https://github.com',
-    linkedin: 'https://linkedin.com',
+    name: 'Shaik Uzhmaa Ada',
+    department: 'Data Science',
+    usn: '2112508903',
+    github: '',
+    linkedin: '',
   },
 ];
 
@@ -162,9 +162,15 @@ const AboutSection = () => {
 
                   <div>
                     <h4 className="text-white font-bold text-sm leading-tight">{member.name}</h4>
-                    <span className="text-purple-400 text-[10px] font-semibold tracking-wider uppercase block mt-1">
-                      {member.role}
-                    </span>
+                    {member.role ? (
+                      <span className="text-purple-400 text-[10px] font-semibold tracking-wider uppercase block mt-1">
+                        {member.role}
+                      </span>
+                    ) : member.department ? (
+                      <span className="text-cyan-400/80 text-[10px] font-semibold tracking-wider uppercase block mt-1">
+                        {member.department}
+                      </span>
+                    ) : null}
                   </div>
 
                   <div className="text-[#8888bb] text-[10px] font-mono select-all">
@@ -172,24 +178,30 @@ const AboutSection = () => {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2.5 mt-5 pt-4 border-t border-white/[0.05] w-full justify-center">
-                  <a
-                    href={member.github}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-7 h-7 rounded-lg hover:bg-white/5 border border-white/5 flex items-center justify-center text-[#8888bb] hover:text-cyan-400 transition-colors hover:border-cyan-400/50"
-                  >
-                    <Github className="w-3.5 h-3.5" />
-                  </a>
-                  <a
-                    href={member.linkedin}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-7 h-7 rounded-lg hover:bg-white/5 border border-white/5 flex items-center justify-center text-[#8888bb] hover:text-[#0077b5] transition-colors hover:border-[#0077b5]/50"
-                  >
-                    <Linkedin className="w-3.5 h-3.5" />
-                  </a>
-                </div>
+                {(member.github || member.linkedin) && (
+                  <div className="flex items-center gap-2.5 mt-5 pt-4 border-t border-white/[0.05] w-full justify-center">
+                    {member.github && (
+                      <a
+                        href={member.github}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-7 h-7 rounded-lg hover:bg-white/5 border border-white/5 flex items-center justify-center text-[#8888bb] hover:text-cyan-400 transition-colors hover:border-cyan-400/50"
+                      >
+                        <Github className="w-3.5 h-3.5" />
+                      </a>
+                    )}
+                    {member.linkedin && (
+                      <a
+                        href={member.linkedin}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-7 h-7 rounded-lg hover:bg-white/5 border border-white/5 flex items-center justify-center text-[#8888bb] hover:text-[#0077b5] transition-colors hover:border-[#0077b5]/50"
+                      >
+                        <Linkedin className="w-3.5 h-3.5" />
+                      </a>
+                    )}
+                  </div>
+                )}
               </div>
             ))}
           </div>
