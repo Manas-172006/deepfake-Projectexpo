@@ -89,7 +89,7 @@ class GeminiService:
 
     _instance = None
     _client   = None
-    _model_id: str = "gemini-1.5-flash"
+    _model_id: str = "gemini-2.5-flash"
     _ready:    bool = False
 
     def __new__(cls):
@@ -98,7 +98,7 @@ class GeminiService:
         return cls._instance
 
     # ------------------------------------------------------------------
-    def initialise(self, api_key: str, model_name: str = "gemini-1.5-flash") -> bool:
+    def initialise(self, api_key: str, model_name: str = "gemini-2.5-flash") -> bool:
         """
         Configure the Gemini client. Called once at app startup.
 

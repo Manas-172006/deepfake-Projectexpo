@@ -28,7 +28,7 @@ class Settings(BaseSettings):
     PRODUCTION_FRONTEND_URLS: Optional[str] = None
 
     # Model Configuration
-    MODEL_PATH: Path = Path(__file__).parent.parent.parent / "models" / "best_model.h5"
+    MODEL_PATH: Path = Path(__file__).resolve().parent.parent.parent / "models" / "best_model.h5"
 
     IMAGE_SIZE: tuple[int, int] = CONST_IMAGE_SIZE
 
@@ -50,7 +50,7 @@ class Settings(BaseSettings):
 
     # ── Gemini / Google AI Studio ────────────────────────────────────────────
     GEMINI_API_KEY: Optional[str] = None
-    GEMINI_MODEL:   str           = "gemini-1.5-flash"
+    GEMINI_MODEL:   str           = "gemini-2.5-flash"
     # Set to False to disable Gemini even when the key is present
     GEMINI_ENABLED: bool          = True
 

@@ -6,13 +6,18 @@ services:
     buildCommand: pip install -r requirements.txt
     startCommand: gunicorn -w 1 -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:$PORT app:app
     envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
       - key: GEMINI_API_KEY
         sync: false
       - key: GEMINI_ENABLED
         value: "True"
+      - key: GEMINI_MODEL
+        value: "gemini-2.5-flash"
       - key: INVERT_LABELS
         value: "False"
       - key: CONFIDENCE_THRESHOLD
-        value: "0.7"
+        value: "0.5"
       - key: PRODUCTION_FRONTEND_URLS
         sync: false
+
